@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#00A878"/>
+<meta name="description" content="EICHOFILT — Monitor kualitas air real-time berbasis IoT"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>EICHOFILT</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══ SIDEBAR (desktop only) ═══ -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
+    <div class="sidebar-brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
+          <path d="M12 11c0 0-2.5 2-2.5 3.5a2.5 2.5 0 005 0C14.5 13 12 11 12 11z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">EICHOFILT</div>
+        <div class="brand-tagline">Monitor Air Pintar</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation">
+      <a class="nav-item active" data-page="dashboard" href="#" role="button" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" href="ml.html" role="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+        </svg>
+        <span>AI Model</span>
+      </a>
+      <a class="nav-item" data-page="filter" href="#" role="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+          <path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/>
+        </svg>
+        <span>Filter</span>
+      </a>
+      <a class="nav-item" data-page="zerowaste" href="#" role="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3M3 12a9 9 0 019-9"/>
+        </svg>
+        <span>Zero Waste</span>
+      </a>
+      <a class="nav-item" data-page="settings" href="#" role="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+        <span>Pengaturan</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <span class="gauge-dot ok"></span>
+        <span style="font-size:12px;font-weight:600;color:var(--ok)">ESP32 Online</span>
+      </div>
+      <div class="sidebar-footer-txt">MQTT · HiveMQ · Node-RED</div>
+    </div>
+  </aside>
+
+  <!-- ═══ APP MAIN ═══ -->
+  <div class="app-main">
+
+    <!-- TOPBAR -->
+    <header class="topbar" role="banner">
+      <div class="topbar-brand">
+        <div class="brand-mark" aria-hidden="true" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--teal);border-radius:8px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
+          </svg>
+        </div>
+        <span class="brand-name" style="font-size:15px">EICHOFILT</span>
+      </div>
+      <div class="topbar-right">
+        <span class="status-badge" id="sys-badge" role="status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="badge-text">Aktif</span>
+        </span>
+        <button class="btn-sim" id="btn-sim" aria-label="Jalankan simulasi">▶ Sim</button>
+      </div>
+    </header>
+
+    <!-- ═══ PAGE: DASHBOARD ═══ -->
+    <main class="main page active" id="page-dashboard" role="main" aria-label="Dashboard">
+
+      <!-- Backwash Alert -->
+      <div class="alert warn" id="bw-banner" style="display:none" role="alert" aria-live="assertive">
+        <span class="alert-icon" aria-hidden="true">⚡</span>
+        <div class="alert-body">
+          <div class="alert-title">Auto-Backwash Aktif</div>
+          <div class="alert-sub">Solenoid valve membersihkan filter</div>
+        </div>
+        <div class="alert-timer" id="bw-timer" aria-label="Countdown">00:30</div>
+      </div>
+
+      <!-- 4 Metric Cards -->
+      <div class="metric-grid" role="region" aria-label="Metrik sensor">
+        <div class="metric-card ok" id="card-turb">
+          <div class="metric-icon" aria-hidden="true">🌊</div>
+          <div class="metric-label">Kekeruhan</div>
+          <div class="metric-val" id="m-turb" aria-live="polite">4.2</div>
+          <div class="metric-unit">NTU</div>
+          <span class="metric-tag ok" id="d-turb">▾ Normal</span>
+        </div>
+        <div class="metric-card info" id="card-tds">
+          <div class="metric-icon" aria-hidden="true">💧</div>
+          <div class="metric-label">Zat Terlarut</div>
+          <div class="metric-val" id="m-tds" aria-live="polite">187</div>
+          <div class="metric-unit">ppm</div>
+          <span class="metric-tag ok" id="d-tds">▾ Layak</span>
+        </div>
+        <div class="metric-card ok" id="card-flow">
+          <div class="metric-icon" aria-hidden="true">⚡</div>
+          <div class="metric-label">Aliran</div>
+          <div class="metric-val" id="m-flow" aria-live="polite">2.1</div>
+          <div class="metric-unit">L/mnt</div>
+          <span class="metric-tag ok" id="d-flow">→ Stabil</span>
+        </div>
+        <div class="metric-card warn" id="card-life">
+          <div class="metric-icon" aria-hidden="true">🔬</div>
+          <div class="metric-label">Membran</div>
+          <div class="metric-val" id="m-life" aria-live="polite">73</div>
+          <div class="metric-unit">%</div>
+          <span class="metric-tag warn" id="d-life">▸ 18 hari</span>
+        </div>
+      </div>
+
+      <!-- Desktop: 2-col layout -->
+      <div class="dash-grid">
+        <!-- Left: Chart + Layers -->
+        <div>
+          <!-- Trend Chart -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Tren 24 Jam</span>
+              <div class="chart-legend">
+                <div class="leg-item"><div class="leg-line" style="background:#00A878"></div>Turbidity</div>
+                <div class="leg-item"><div class="leg-line" style="background:#3B82F6;border-top:2px dashed #3B82F6;height:0"></div>TDS÷10</div>
+              </div>
+            </div>
+            <div class="card-body" style="padding-top:8px">
+              <div class="chart-wrap">
+                <canvas id="trendChart" role="img" aria-label="Grafik tren turbidity dan TDS 24 jam"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer Status -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">Status Filter</span></div>
+            <div class="card-body">
+              <div class="layer-list" role="list" aria-label="Status lapisan filter">
+                <div class="layer-item" role="listitem">
+                  <div class="layer-num l1" aria-hidden="true">L1</div>
+                  <div class="layer-info">
+                    <div class="layer-name">Pasir Silika</div>
+                    <div class="layer-desc">Partikel makro & lumpur</div>
+                    <div class="layer-pbar"><div class="layer-pfill" id="lp1" style="width:28%;background:var(--teal)"></div></div>
+                  </div>
+                  <span class="layer-badge ok" id="ls-1">28%</span>
+                </div>
+                <div class="layer-item" role="listitem">
+                  <div class="layer-num l2" aria-hidden="true">L2</div>
+                  <div class="layer-info">
+                    <div class="layer-name">Membran CNF</div>
+                    <div class="layer-desc">Mikroplastik &lt;100μm</div>
+                    <div class="layer-pbar"><div class="layer-pfill" id="lp2" style="width:27%;background:#3B82F6"></div></div>
+                  </div>
+                  <span class="layer-badge ok" id="ls-2">27%</span>
+                </div>
+                <div class="layer-item" role="listitem">
+                  <div class="layer-num l3" aria-hidden="true">L3</div>
+                  <div class="layer-info">
+                    <div class="layer-name">Karbon Aktif</div>
+                    <div class="layer-desc">Bau, klorin & organik</div>
+                    <div class="layer-pbar"><div class="layer-pfill" id="lp3" style="width:19%;background:var(--warn)"></div></div>
+                  </div>
+                  <span class="layer-badge ok" id="ls-3">19%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prediction + Saturation + Notif -->
+        <div>
+          <!-- Prediction Hero -->
+          <div class="pred-hero" role="region" aria-label="Prediksi kondisi filter">
+            <div class="pred-label">Prediksi AI</div>
+            <div class="pred-status" id="ml-now">Normal</div>
+            <div class="pred-conf" id="ml-conf">Keyakinan: 94.2%</div>
+            <div class="pred-row">
+              <div class="pred-item">
+                <div class="pred-item-time">12 Jam</div>
+                <div class="pred-item-val ok" id="ml-12h">Normal</div>
+              </div>
+              <div class="pred-item">
+                <div class="pred-item-time">24 Jam</div>
+                <div class="pred-item-val bw" id="ml-24h">Backwash</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saturation -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">Saturasi Filter</span></div>
+            <div class="card-body">
+              <div class="sat-list">
+                <div class="sat-row">
+                  <div class="sat-head">
+                    <span class="sat-name">L1 Pasir Silika</span>
+                    <span class="sat-pct" id="p1-val">28%</span>
+                  </div>
+                  <div class="sat-track"><div class="sat-fill ok" id="p1-fill" style="width:28%"></div></div>
+                </div>
+                <div class="sat-row">
+                  <div class="sat-head">
+                    <span class="sat-name">L2 Membran CNF</span>
+                    <span class="sat-pct" id="p2-val">27%</span>
+                  </div>
+                  <div class="sat-track"><div class="sat-fill ok" id="p2-fill" style="width:27%;background:#3B82F6"></div></div>
+                </div>
+                <div class="sat-row">
+                  <div class="sat-head">
+                    <span class="sat-name">L3 Karbon Aktif</span>
+                    <span class="sat-pct" id="p3-val">19%</span>
+                  </div>
+                  <div class="sat-track"><div class="sat-fill warn" id="p3-fill" style="width:19%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notif -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">Notifikasi</span></div>
+            <div class="card-body">
+              <div class="notif-list">
+                <div class="notif-item">
+                  <div class="notif-icon" style="background:var(--teal-l)" aria-hidden="true">💬</div>
+                  <div class="notif-body">
+                    <div class="notif-name">WhatsApp</div>
+                    <div class="notif-desc">Fonnte API</div>
+                  </div>
+                  <label class="toggle" aria-label="Toggle WhatsApp notifikasi">
+                    <input type="checkbox" checked onchange="handleToggle(this,'WA')"/>
+                    <div class="toggle-track"></div>
+                  </label>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-icon" style="background:#EFF6FF" aria-hidden="true">📄</div>
+                  <div class="notif-body">
+                    <div class="notif-name">Laporan PDF</div>
+                    <div class="notif-desc">Setiap tanggal 1</div>
+                  </div>
+                  <label class="toggle" aria-label="Toggle laporan PDF">
+                    <input type="checkbox" checked onchange="handleToggle(this,'PDF')"/>
+                    <div class="toggle-track"></div>
+                  </label>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-icon" style="background:#FEF3C7" aria-hidden="true">⚠️</div>
+                  <div class="notif-body">
+                    <div class="notif-name">Alert Turbidity</div>
+                    <div class="notif-desc">&gt;10 NTU</div>
+                  </div>
+                  <label class="toggle" aria-label="Toggle alert turbidity">
+                    <input type="checkbox" checked onchange="handleToggle(this,'Alert')"/>
+                    <div class="toggle-track"></div>
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="generateReport()">📄 Buat Laporan</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- end dash-grid -->
+
+      <!-- Log -->
+      <div class="card mb">
+        <div class="card-head">
+          <span class="card-title">Log Sistem</span>
+          <button class="btn btn-ghost" onclick="clearLog()">Hapus</button>
+        </div>
+        <div class="card-body" style="padding-top:4px">
+          <div class="log-list" id="log-list" role="log" aria-live="polite" aria-label="Log sistem">
+            <div class="log-item"><span class="log-time">07:42</span><span class="log-dot ok"></span><span class="log-msg">Sistem aktif, sensor terhubung via MQTT</span></div>
+            <div class="log-item"><span class="log-time">09:30</span><span class="log-dot info"></span><span class="log-msg">ML: kondisi Normal, tidak ada aksi</span></div>
+            <div class="log-item"><span class="log-time">11:20</span><span class="log-dot warn"></span><span class="log-msg">Prediksi: backwash dalam ≈14 jam</span></div>
+          </div>
+        </div>
+      </div>
+
+    </main><!-- end dashboard -->
+
+    <!-- ═══ PAGE: FILTER ═══ -->
+    <main class="main page" id="page-filter" aria-label="Status Filter">
+      <div class="metric-grid mb">
+        <div class="metric-card ok">
+          <div class="metric-icon">📅</div>
+          <div class="metric-label">Operasi</div>
+          <div class="metric-val">12</div>
+          <div class="metric-unit">hari</div>
+          <span class="metric-tag ok">Normal</span>
+        </div>
+        <div class="metric-card info">
+          <div class="metric-icon">🔄</div>
+          <div class="metric-label">Backwash</div>
+          <div class="metric-val">7</div>
+          <div class="metric-unit">siklus</div>
+          <span class="metric-tag ok">Sesuai</span>
+        </div>
+        <div class="metric-card ok">
+          <div class="metric-icon">💧</div>
+          <div class="metric-label">Difiltrasi</div>
+          <div class="metric-val">862</div>
+          <div class="metric-unit">Liter</div>
+          <span class="metric-tag ok">Efisien</span>
+        </div>
+        <div class="metric-card warn">
+          <div class="metric-icon">⏳</div>
+          <div class="metric-label">Ganti</div>
+          <div class="metric-val">18</div>
+          <div class="metric-unit">hari lagi</div>
+          <span class="metric-tag warn">Siapkan</span>
+        </div>
+      </div>
+
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">L1 — Pasir Silika</span><span class="card-badge">Baik</span></div>
+        <div class="card-body">
+          <div class="about-rows">
+            <div class="about-row"><span class="about-key">Fungsi</span><span class="about-val">Makro-partikel, lumpur</span></div>
+            <div class="about-row"><span class="about-key">Mekanisme</span><span class="about-val">Filtrasi fisik granular</span></div>
+            <div class="about-row"><span class="about-key">Saturasi</span><span class="about-val" id="fd-p1">28%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">L2 — Membran CNF</span><span class="card-badge">Baik</span></div>
+        <div class="card-body">
+          <div class="about-rows">
+            <div class="about-row"><span class="about-key">Fungsi</span><span class="about-val">Mikroplastik &lt;100μm</span></div>
+            <div class="about-row"><span class="about-key">Mekanisme</span><span class="about-val">Sieving + TEMPO elektrostatik</span></div>
+            <div class="about-row"><span class="about-key">Saturasi</span><span class="about-val" id="fd-p2">27%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">L3 — Karbon Aktif</span><span class="card-badge">Baik</span></div>
+        <div class="card-body">
+          <div class="about-rows">
+            <div class="about-row"><span class="about-key">Fungsi</span><span class="about-val">Bau, klorin, organik</span></div>
+            <div class="about-row"><span class="about-key">Mekanisme</span><span class="about-val">Adsorpsi kimiawi</span></div>
+            <div class="about-row"><span class="about-key">Saturasi</span><span class="about-val" id="fd-p3">19%</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ═══ PAGE: ZERO WASTE ═══ -->
+    <main class="main page" id="page-zerowaste" aria-label="Zero Waste">
+      <div class="zw-stats mb">
+        <div class="zw-stat">
+          <div class="zw-stat-label">Residu</div>
+          <div class="zw-stat-val" id="zw-residu">14.7g</div>
+          <div class="zw-stat-sub">dari 30g ecobrick</div>
+          <div class="zw-mini-bar"><div class="zw-mini-fill" id="zw-residu-fill" style="width:49%"></div></div>
+        </div>
+        <div class="zw-stat">
+          <div class="zw-stat-label">Mikroplastik</div>
+          <div class="zw-stat-val" id="zw-mp">8.3mg</div>
+          <div class="zw-stat-sub">tersita</div>
+        </div>
+        <div class="zw-stat">
+          <div class="zw-stat-label">Aquatup</div>
+          <div class="zw-stat-val" id="zw-aq-pct">71%</div>
+          <div class="zw-mini-bar"><div class="zw-mini-fill warn" id="zw-aq-fill" style="width:71%"></div></div>
+        </div>
+        <div class="zw-stat">
+          <div class="zw-stat-label">Ecobrick</div>
+          <div class="zw-stat-val" id="zw-brick">0</div>
+          <div class="zw-stat-sub">dihasilkan</div>
+        </div>
+      </div>
+
+      <div class="zw-layout">
+        <div>
+          <!-- Alur -->
+          <div class="card mb">
+            <div class="card-head"><span class="card-title">Alur Zero Waste</span></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg);border-radius:8px;border-left:3px solid var(--info)">
+                  <span style="font-size:16px">💧</span>
+                  <div><div style="font-size:12px;font-weight:700">Backwash Residu</div><div class="txt-muted" id="zw-bw-vol">0.84L terkumpul</div></div>
+                </div>
+                <div style="text-align:center;color:var(--text-3);font-size:12px">↓</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg);border-radius:8px;border-left:3px solid var(--warn)">
+                  <span style="font-size:16px">🧪</span>
+                  <div><div style="font-size:12px;font-weight:700">Koagulasi</div><div class="txt-muted" id="zw-sediment">~2.1g padatan</div></div>
+                </div>
+                <div style="text-align:center;color:var(--text-3);font-size:12px">↓</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg);border-radius:8px;border-left:3px solid var(--text-3)">
+                  <span style="font-size:16px">🔥</span>
+                  <div><div style="font-size:12px;font-weight:700">Hot-Press</div><div class="txt-muted">150–180°C · 30:70</div></div>
+                </div>
+                <div style="text-align:center;color:var(--text-3);font-size:12px">↓</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--teal-l);border-radius:8px;border-left:3px solid var(--teal)">
+                  <span style="font-size:16px">🧱</span>
+                  <div><div style="font-size:12px;font-weight:700;color:var(--teal-d)">Ecobrick</div><div class="txt-muted">≥5 MPa kuat tekan</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Gauge + History -->
+        <div>
+          <div class="card mb">
+            <div class="card-head"><span class="card-title">Level Aquatup</span></div>
+            <div class="card-body">
+              <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120" role="img" aria-label="Level aquatup">
+                  <rect x="30" y="15" width="60" height="85" rx="7" fill="none" stroke="var(--border)" stroke-width="2"/>
+                  <clipPath id="lc"><rect x="30" y="15" width="60" height="85" rx="7"/></clipPath>
+                  <rect id="zw-liq" x="30" y="75" width="60" height="25" fill="var(--warn)" opacity=".25" clip-path="url(#lc)"/>
+                  <path id="zw-wave" d="M30,75 Q50,71 70,75 Q90,79 90,75" fill="none" stroke="var(--warn)" stroke-width="1.5" opacity=".8" clip-path="url(#lc)">
+                    <animate attributeName="d" values="M30,75 Q50,71 70,75 Q90,79 90,75;M30,75 Q50,79 70,75 Q90,71 90,75;M30,75 Q50,71 70,75 Q90,79 90,75" dur="3s" repeatCount="indefinite"/>
+                  </path>
+                  <text id="zw-gpct" x="60" y="62" text-anchor="middle" font-size="16" font-weight="800" fill="var(--text)" style="font-family:var(--f-sans)">71%</text>
+                  <text x="60" y="74" text-anchor="middle" font-size="8" fill="var(--text-3)" style="font-family:var(--f-sans)">aquatup</text>
+                </svg>
+                <div class="gauge-action">
+                  <span class="gauge-dot warn" id="zw-gdot"></span>
+                  <span id="zw-gmsg" style="font-size:11px;color:var(--text-2)">Bersihkan ~2 hari</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb">
+            <div class="card-head"><span class="card-title">Backwash 7 Hari</span></div>
+            <div class="card-body">
+              <div class="hist-bars" id="zw-hist"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sdg-row">
+        <span class="sdg-badge sdg-6">SDGs 6</span>
+        <span class="sdg-badge sdg-12">SDGs 12</span>
+        <span class="sdg-badge sdg-14">SDGs 14</span>
+        <span class="sdg-badge sdg-ac">Asta Cita</span>
+      </div>
+      <button class="btn btn-outline btn-full" style="margin-top:12px" onclick="bersihkanAquatup()">🧹 Aquatup Sudah Dibersihkan</button>
+    </main>
+
+    <!-- ═══ PAGE: SETTINGS ═══ -->
+    <main class="main page" id="page-settings" aria-label="Pengaturan">
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">Ambang Batas</span></div>
+        <div class="card-body">
+          <div class="settings-group">
+            <div class="settings-row">
+              <div class="settings-info">
+                <div class="settings-name">Turbidity Kritis</div>
+                <div class="settings-desc">Trigger backwash (NTU)</div>
+              </div>
+              <input class="settings-input" type="number" value="10" min="1" max="100" id="cfg-turb" aria-label="Turbidity kritis NTU"/>
+            </div>
+            <div class="settings-row">
+              <div class="settings-info">
+                <div class="settings-name">TDS Maksimum</div>
+                <div class="settings-desc">Alert tidak layak (ppm)</div>
+              </div>
+              <input class="settings-input" type="number" value="500" min="50" max="2000" id="cfg-tds" aria-label="TDS maksimum ppm"/>
+            </div>
+            <div class="settings-row">
+              <div class="settings-info">
+                <div class="settings-name">Flow Minimum</div>
+                <div class="settings-desc">Tersumbat (L/mnt)</div>
+              </div>
+              <input class="settings-input" type="number" value="1.2" min="0.1" max="5" step="0.1" id="cfg-flow" aria-label="Flow minimum L/menit"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-primary" style="flex:1" onclick="saveSettings()">Simpan</button>
+            <button class="btn btn-outline" style="flex:1" onclick="resetSettings()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">WhatsApp Fonnte</span></div>
+        <div class="card-body">
+          <div class="settings-group">
+            <div class="settings-row">
+              <div class="settings-info">
+                <div class="settings-name">Nomor HP</div>
+                <div class="settings-desc">Format: 628xxx</div>
+              </div>
+              <input class="settings-input" type="tel" placeholder="628..." id="cfg-wa" style="width:110px" aria-label="Nomor WhatsApp tujuan"/>
+            </div>
+            <div class="settings-row">
+              <div class="settings-info">
+                <div class="settings-name">API Token</div>
+                <div class="settings-desc">dashboard.fonnte.com</div>
+              </div>
+              <input class="settings-input" type="password" placeholder="••••" id="cfg-token" style="width:110px" aria-label="Fonnte API token"/>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="testWA()">📤 Kirim Pesan Uji</button>
+        </div>
+      </div>
+
+      <div class="card mb">
+        <div class="card-head"><span class="card-title">Tentang Sistem</span></div>
+        <div class="card-body">
+          <div class="about-rows">
+            <div class="about-row"><span class="about-key">Versi</span><span class="about-val">v3.0.0</span></div>
+            <div class="about-row"><span class="about-key">Hardware</span><span class="about-val">ESP32 Dual-Core</span></div>
+            <div class="about-row"><span class="about-key">IoT</span><span class="about-val">MQTT · HiveMQ</span></div>
+            <div class="about-row"><span class="about-key">ML Model</span><span class="about-val">Random Forest 150est</span></div>
+            <div class="about-row"><span class="about-key">Notifikasi</span><span class="about-val">Fonnte WhatsApp API</span></div>
+            <div class="about-row"><span class="about-key">Sinkronisasi</span><span class="about-val" id="last-sync">baru saja</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div><!-- end app-main -->
+</div><!-- end app -->
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" role="navigation" aria-label="Navigasi bawah">
+  <a class="nav-item active" data-page="dashboard" href="#" aria-label="Dashboard" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span>Home</span>
+  </a>
+  <a class="nav-item" href="ml.html" aria-label="AI Model">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+    </svg>
+    <span>AI</span>
+  </a>
+  <a class="nav-item" data-page="filter" href="#" aria-label="Status Filter">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+      <path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/>
+    </svg>
+    <span>Filter</span>
+  </a>
+  <a class="nav-item" data-page="zerowaste" href="#" aria-label="Zero Waste">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3M3 12a9 9 0 019-9"/>
+    </svg>
+    <span>Daur</span>
+  </a>
+  <a class="nav-item" data-page="settings" href="#" aria-label="Pengaturan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+    <span>Atur</span>
+  </a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<script src="js/core.js" defer></script>
+</body>
+</html>
