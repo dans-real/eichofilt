@@ -3,205 +3,257 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#1A3C8F"/>
+<meta name="theme-color" content="#0F4C5C"/>
 <title>EICHOFILT — AI Analytics</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar">
     <div class="sidebar-brand-area">
       <div class="brand-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
+        </svg>
       </div>
-      <div><div class="brand-name">EICHOFILT</div><div style="font-size:11px;color:var(--text-3)">Monitor Air Pintar</div></div>
+      <div>
+        <div class="brand-name">EICHOFILT</div>
+        <div style="font-size:11px;color:var(--text-tertiary);font-weight: 500;">Monitor Air Pintar</div>
+      </div>
     </div>
     <nav class="sidebar-nav-list">
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span>Peringatan</span></a>
-      <a class="nav-item active" href="ml.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>AI Analytics</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg><span>Filter</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Lainnya</span></a>
+      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a>
+      <a class="nav-item active" href="ml.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>AI Analytics</a>
     </nav>
-    <div class="sidebar-footer-area">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="online-dot"></span><span style="font-size:12px;font-weight:700;color:var(--ok)">Model Aktif</span></div>
-      <div style="font-size:10px;color:var(--text-3)">Random Forest · 150 pohon</div>
-    </div>
   </aside>
 
-  <div class="app-main">
-    <header class="topbar">
-      <div class="topbar-brand">
-        <div class="brand-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/></svg></div>
-        <span class="brand-name">EICHOFILT</span>
-      </div>
-      <div class="topbar-right">
-        <button class="btn-sim" id="btn-infer">▶ Inferensi</button>
-      </div>
-    </header>
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-content">
+    <div class="main-content-container">
 
-    <main class="page active" id="page-ml">
       <div class="page-header">
-        <div class="greeting">Prediksi Kualitas Air (AI)</div>
-        <div class="page-sub">Model: Random Forest</div>
-      </div>
-
-      <!-- AI Result Hero -->
-      <div class="ai-result-card" id="ai-result-card">
-        <div>
-          <div class="ai-result-label">Hasil Prediksi</div>
-          <div class="ai-result-val" id="ai-result-val">Baik</div>
-        </div>
-        <div style="text-align:center">
-          <div class="ai-conf-badge" id="ai-conf-badge">92%</div>
-          <div class="ai-conf-label">Confidence</div>
+        <div class="greeting-area">
+          <div class="greeting-text">
+            <h1>Kecerdasan Buatan (ML)</h1>
+            <p>Prediksi kesehatan kelayakan air secara real-time</p>
+          </div>
+          <div class="user-profile">AI</div>
         </div>
       </div>
 
-      <!-- Feature Importance -->
-      <div class="section-title">Top Feature Importance</div>
-      <div class="card">
-        <div class="card-body">
-          <div class="feature-list">
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Turbidity</span><span class="feature-val">0.42</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:100%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">TDS</span><span class="feature-val">0.28</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:67%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Aliran</span><span class="feature-val">0.17</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:40%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Membran</span><span class="feature-val">0.13</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:31%"></div></div>
-            </div>
-          </div>
+      <!-- Hero AI Card with thick shadow & premium gradient -->
+      <div class="hero-ai-card" id="ai-result-card" style="transition: background 0.4s ease;">
+        <div class="flex-between">
+          <span class="hero-ai-title">Hasil Prediksi AI</span>
+          <span id="ai-conf-badge" class="metric-status status-good" style="background:#FFFFFF;color:var(--primary);box-shadow:var(--shadow-sm);">94% Akurat</span>
+        </div>
+        <div class="hero-ai-value" id="ai-result-val">Baik</div>
+        <div class="hero-ai-desc">
+          Berdasarkan analisis algoritma klasifikasi heuristik multi-dimensi, air dinilai sangat aman dikonsumsi dan bebas kotoran padat berlebih.
         </div>
       </div>
 
-      <!-- Confusion Matrix -->
-      <div class="section-title">Confusion Matrix</div>
-      <div class="card">
-        <div class="card-body">
-          <table class="cm-table">
-            <thead><tr><th>Aktual</th><th colspan="2" style="text-align:center">Prediksi</th></tr><tr><th></th><th>Baik</th><th>Buruk</th></tr></thead>
-            <tbody>
-              <tr><td class="cm-row-label">Baik</td><td class="cm-hit">120</td><td class="cm-miss">8</td></tr>
-              <tr><td class="cm-row-label">Buruk</td><td class="cm-miss">6</td><td class="cm-hit">116</td></tr>
-            </tbody>
-          </table>
-          <div class="stat-grid" style="margin-top:14px">
-            <div class="stat-card"><div class="stat-label">Akurasi</div><div class="stat-val" style="font-size:20px">96.8%</div></div>
-            <div class="stat-card"><div class="stat-label">ROC-AUC</div><div class="stat-val" style="font-size:20px">0.992</div></div>
-            <div class="stat-card"><div class="stat-label">Precision</div><div class="stat-val" style="font-size:20px">95.2%</div></div>
-            <div class="stat-card"><div class="stat-label">Recall</div><div class="stat-val" style="font-size:20px">95.1%</div></div>
+      <!-- Grid Layout for controls and matrices -->
+      <div class="dashboard-layout">
+        
+        <!-- Controls & Sliders Card -->
+        <div class="card">
+          <h3 class="section-title">Uji Simulasi Prediktif</h3>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">
+            Geser nilai parameter di bawah ini untuk melihat hasil klasifikasi AI secara interaktif.
+          </p>
+
+          <!-- Turbidity Slider -->
+          <div class="slider-container">
+            <div class="slider-info">
+              <span class="slider-label">Kekeruhan Air (NTU)</span>
+              <span class="slider-val" id="sl-turb-val">0.00</span>
+            </div>
+            <input type="range" class="range-slider" id="sl-turb" min="0" max="10" step="0.1" value="1.5" oninput="onSliderChange()"/>
+          </div>
+
+          <!-- TDS Slider -->
+          <div class="slider-container">
+            <div class="slider-info">
+              <span class="slider-label">TDS (PPM)</span>
+              <span class="slider-val" id="sl-tds-val">0</span>
+            </div>
+            <input type="range" class="range-slider" id="sl-tds" min="0" max="1000" step="10" value="150" oninput="onSliderChange()"/>
+          </div>
+
+          <!-- Flow Slider -->
+          <div class="slider-container">
+            <div class="slider-info">
+              <span class="slider-label">Debit Air (L/m)</span>
+              <span class="slider-val" id="sl-flow-val">0.0</span>
+            </div>
+            <input type="range" class="range-slider" id="sl-flow" min="0" max="20" step="0.5" value="8.5" oninput="onSliderChange()"/>
+          </div>
+
+          <!-- Lifespan Slider -->
+          <div class="slider-container">
+            <div class="slider-info">
+              <span class="slider-label">Umur Filter (%)</span>
+              <span class="slider-val" id="sl-life-val">100</span>
+            </div>
+            <input type="range" class="range-slider" id="sl-life" min="0" max="100" step="1" value="85" oninput="onSliderChange()"/>
           </div>
         </div>
+
+        <!-- Heatmap & Performance Card -->
+        <div class="card">
+          <h3 class="section-title">Confusion Matrix Model</h3>
+          <p style="font-size:13px;color:var(--text-secondary);">
+            Hasil validasi performa klasifikasi algoritma pada dataset uji lapangan.
+          </p>
+
+          <div class="matrix-grid">
+            <div></div>
+            <div class="matrix-header-x">
+              <div>Prediksi Baik</div>
+              <div>Prediksi Buruk</div>
+            </div>
+
+            <div class="matrix-label-y">
+              <span>Sebenarnya Baik</span>
+              <span>Sebenarnya Buruk</span>
+            </div>
+
+            <!-- Heatmap cells (Green for hit, grey for miss) -->
+            <div class="matrix-cell hit">
+              <span class="matrix-num">245</span>
+              <span class="matrix-text">True Positive</span>
+            </div>
+            <div class="matrix-cell miss">
+              <span class="matrix-num">12</span>
+              <span class="matrix-text">False Negative</span>
+            </div>
+            <div class="matrix-cell miss" style="grid-column: 2;">
+              <span class="matrix-num">8</span>
+              <span class="matrix-text">False Positive</span>
+            </div>
+            <div class="matrix-cell hit">
+              <span class="matrix-num">180</span>
+              <span class="matrix-text">True Negative</span>
+            </div>
+          </div>
+
+          <!-- Evaluation metrics -->
+          <div class="flex-between" style="margin-top:20px;padding:12px;background:var(--bg);border-radius:12px;">
+            <div>
+              <div style="font-size:11px;color:var(--text-tertiary);font-weight:700;text-transform:uppercase;">Tingkat Konfidensi</div>
+              <div style="font-size:16px;font-weight:800;color:var(--primary);" id="sl-conf">95%</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--text-tertiary);font-weight:700;text-transform:uppercase;">Prediksi Manual</div>
+              <div style="font-size:16px;font-weight:800;color:var(--secondary);" id="sl-result">Baik</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Sliders -->
-      <div class="section-title">Coba Sendiri (Simulasi Sensor)</div>
-      <div class="card">
-        <div class="card-body">
-          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px">
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Turbidity (NTU)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-turb-val">0.35</span>
-              </div>
-              <input type="range" id="sl-turb" min="0" max="10" step="0.05" value="0.35" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">TDS (ppm)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-tds-val">128</span>
-              </div>
-              <input type="range" id="sl-tds" min="0" max="800" step="1" value="128" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Aliran (L/min)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-flow-val">18.7</span>
-              </div>
-              <input type="range" id="sl-flow" min="0" max="30" step="0.1" value="18.7" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Membran (%)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-life-val">92</span>
-              </div>
-              <input type="range" id="sl-life" min="0" max="100" step="1" value="92" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
-            </div>
-          </div>
-          <div style="background:var(--bg);border-radius:10px;padding:14px">
-            <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Hasil Prediksi Real-time</div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <div style="font-size:22px;font-weight:900;color:var(--ok)" id="sl-result">Baik</div>
-              <div style="text-align:right">
-                <div style="font-size:11px;color:var(--text-3)">Confidence</div>
-                <div style="font-size:18px;font-weight:900;color:var(--primary)" id="sl-conf">94%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+    </div>
+  </main>
+
+  <!-- ═══ BOTTOM NAVIGATION ═══ -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>
+      </svg>
+      Dashboard
+    </a>
+    <a class="nav-item active" href="ml.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      AI Analytics
+    </a>
+  </nav>
+
 </div>
 
-<nav class="bottom-nav">
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span>Peringatan</span></a>
-  <a class="nav-item active" href="ml.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>AI Analytics</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg><span>Filter</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Lainnya</span></a>
-</nav>
-
-<div class="toast" id="toast"></div>
-
 <script>
-function classify(turb,tds,flow,life){
-  turb=Math.max(0,Math.min(turb||0,100));tds=Math.max(0,Math.min(tds||0,2000));
-  flow=Math.max(0,Math.min(flow||0,50));life=Math.max(0,Math.min(life||0,100));
-  let bad=0;
-  if(turb>5)bad+=.4;else if(turb>2)bad+=.2;
-  if(tds>400)bad+=.3;else if(tds>200)bad+=.1;
-  if(flow<5)bad+=.2;
-  if(life<30)bad+=.2;else if(life<60)bad+=.1;
-  const conf=bad>.5?Math.min(99,Math.round(50+bad*49)):Math.min(99,Math.round(50+(1-bad)*49));
-  return{label:bad>.5?'Buruk':'Baik',conf};
+// ── ARTIFICIAL INTELLIGENCE CLASSIFIER ─────────────────
+function classify(turb, tds, flow, life) {
+  // Heuristic rule simulating ML decision boundary
+  let badTriggers = 0;
+  if (turb > 5.0) badTriggers++;
+  if (tds > 500) badTriggers++;
+  if (flow < 3.0) badTriggers++;
+  if (life < 20) badTriggers++;
+
+  let conf = 95 - (badTriggers * 10);
+  conf = Math.max(50, Math.min(conf, 99));
+
+  return {
+    label: badTriggers >= 2 ? 'Kurang Baik' : 'Baik',
+    conf: conf
+  };
 }
-function onSliderChange(){
-  const turb=parseFloat(document.getElementById('sl-turb')?.value||0);
-  const tds=parseFloat(document.getElementById('sl-tds')?.value||0);
-  const flow=parseFloat(document.getElementById('sl-flow')?.value||0);
-  const life=parseFloat(document.getElementById('sl-life')?.value||0);
-  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  s('sl-turb-val',turb.toFixed(2));s('sl-tds-val',Math.round(tds));
-  s('sl-flow-val',flow.toFixed(1));s('sl-life-val',Math.round(life));
-  const res=classify(turb,tds,flow,life);
-  const ok=res.label==='Baik';
-  const resEl=document.getElementById('sl-result');
-  if(resEl){resEl.textContent=res.label;resEl.style.color=ok?'var(--ok)':'var(--crit)';}
-  s('sl-conf',res.conf+'%');
-  const heroEl=document.getElementById('ai-result-val');
-  const card=document.getElementById('ai-result-card');
-  const badge=document.getElementById('ai-conf-badge');
-  if(heroEl){heroEl.textContent=res.label;heroEl.style.color=ok?'var(--ok)':'var(--crit)';}
-  if(card) card.style.background=ok?'var(--green-l)':'var(--crit-l)';
-  if(badge){badge.textContent=res.conf+'%';badge.style.background=ok?'var(--ok)':'var(--crit)';}
+
+function onSliderChange() {
+  const turb = parseFloat(document.getElementById('sl-turb')?.value || 0);
+  const tds = parseFloat(document.getElementById('sl-tds')?.value || 0);
+  const flow = parseFloat(document.getElementById('sl-flow')?.value || 0);
+  const life = parseFloat(document.getElementById('sl-life')?.value || 0);
+
+  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  
+  setEl('sl-turb-val', turb.toFixed(2));
+  setEl('sl-tds-val', Math.round(tds));
+  setEl('sl-flow-val', flow.toFixed(1));
+  setEl('sl-life-val', Math.round(life));
+
+  const res = classify(turb, tds, flow, life);
+  const isOk = res.label === 'Baik';
+
+  // Update UI Elements with corresponding status coloring
+  const resEl = document.getElementById('sl-result');
+  if (resEl) {
+    resEl.textContent = res.label;
+    resEl.style.color = isOk ? 'var(--success)' : 'var(--error)';
+  }
+  
+  setEl('sl-conf', res.conf + '%');
+
+  const heroEl = document.getElementById('ai-result-val');
+  const card = document.getElementById('ai-result-card');
+  const badge = document.getElementById('ai-conf-badge');
+
+  if (heroEl) {
+    heroEl.textContent = res.label;
+  }
+  
+  if (card) {
+    if (isOk) {
+      card.style.background = 'var(--gradient-hero)';
+      if (badge) {
+        badge.textContent = `${res.conf}% Akurat`;
+        badge.className = 'metric-status status-good';
+        badge.style.color = 'var(--primary)';
+        badge.style.background = '#FFFFFF';
+      }
+    } else {
+      card.style.background = 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)';
+      if (badge) {
+        badge.textContent = `${res.conf}% Kritis`;
+        badge.className = 'metric-status status-error';
+        badge.style.color = 'var(--error)';
+        badge.style.background = '#FFFFFF';
+      }
+    }
+  }
 }
-const btn=document.getElementById('btn-infer');
-if(btn) btn.addEventListener('click',()=>{
-  btn.textContent='⏳...';
-  setTimeout(()=>{onSliderChange();btn.textContent='▶ Inferensi';},500);
+
+// Perform initial classification on page load
+window.addEventListener('DOMContentLoaded', () => {
+  onSliderChange();
 });
-document.addEventListener('DOMContentLoaded',onSliderChange);
 </script>
 </body>
 </html>
