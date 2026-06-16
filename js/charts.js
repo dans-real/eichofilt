@@ -37,8 +37,8 @@ function initTrendChart() {
         {
           label: 'Turbidity (NTU)',
           data: [...state.turbData],
-          borderColor: '#1D9E75',
-          backgroundColor: 'rgba(29,158,117,0.07)',
+          borderColor: '#0F4C5C',
+          backgroundColor: 'rgba(15,76,92,0.07)',
           borderWidth: 1.5,
           pointRadius: 0,
           pointHoverRadius: 4,
@@ -49,8 +49,8 @@ function initTrendChart() {
         {
           label: 'TDS (ppm/10)',
           data: state.tdsData.map(v => +(v / 10).toFixed(1)),
-          borderColor: '#378ADD',
-          backgroundColor: 'rgba(55,138,221,0.05)',
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16,185,129,0.05)',
           borderWidth: 1.5,
           pointRadius: 0,
           pointHoverRadius: 4,
@@ -118,14 +118,14 @@ function initEffChart() {
         label: 'Efisiensi penyisihan (%)',
         data: EFFICIENCY_DATA.values,
         backgroundColor: [
-          'rgba(29,158,117,0.7)',
-          'rgba(29,158,117,0.75)',
-          'rgba(29,158,117,0.8)',
-          'rgba(29,158,117,0.85)',
-          'rgba(29,158,117,0.9)',
-          'rgba(15,110,86,0.95)'
+          'rgba(15,76,92,0.7)',
+          'rgba(15,76,92,0.75)',
+          'rgba(15,76,92,0.8)',
+          'rgba(15,76,92,0.85)',
+          'rgba(15,76,92,0.9)',
+          'rgba(10,56,69,0.95)'
         ],
-        borderColor: '#1D9E75',
+        borderColor: '#0F4C5C',
         borderWidth: 0,
         borderRadius: 5,
         borderSkipped: false
@@ -176,8 +176,8 @@ function initBwChart() {
       datasets: [{
         label: 'Siklus backwash',
         data: BACKWASH_DATA.values,
-        backgroundColor: 'rgba(239,159,39,0.65)',
-        borderColor: '#EF9F27',
+        backgroundColor: 'rgba(245,158,11,0.65)',
+        borderColor: '#F59E0B',
         borderWidth: 0,
         borderRadius: 5,
         borderSkipped: false
