@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#1A3C8F"/>
+<meta name="theme-color" content="#0F4C5C"/>
 <meta name="description" content="EICHOFILT — Sistem pemantauan kualitas air rumah tangga"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>EICHOFILT</title>
@@ -206,15 +206,15 @@
           <div class="chart-section-title">Tren 24 Jam Terakhir</div>
           <div class="chart-legend">
             <div class="legend-item">
-              <div class="legend-line" style="background:#1A3C8F"></div>
+              <div class="legend-line" style="background:var(--primary)"></div>
               Turbidity (NTU)
             </div>
             <div class="legend-item">
-              <div class="legend-line" style="background:#22A85A"></div>
+              <div class="legend-line" style="background:var(--ok)"></div>
               TDS (ppm)
             </div>
             <div class="legend-item">
-              <div class="legend-line" style="background:#F59E0B"></div>
+              <div class="legend-line" style="background:var(--warn)"></div>
               Aliran (L/min)
             </div>
           </div>
@@ -389,13 +389,13 @@
         <div class="gauge-svg-wrap">
           <svg class="gauge-svg" viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gauge aquatup">
             <!-- track -->
-            <path d="M20 110 A80 80 0 0 1 180 110" stroke="#E2E8F0" stroke-width="16" stroke-linecap="round"/>
+            <path d="M20 110 A80 80 0 0 1 180 110" stroke="var(--border)" stroke-width="16" stroke-linecap="round"/>
             <!-- fill (62.5% of 180deg = ~112deg) -->
-            <path id="gauge-fill" d="M20 110 A80 80 0 0 1 180 110" stroke="#22A85A" stroke-width="16" stroke-linecap="round"
+            <path id="gauge-fill" d="M20 110 A80 80 0 0 1 180 110" stroke="#10B981" stroke-width="16" stroke-linecap="round"
               stroke-dasharray="251.2" stroke-dashoffset="94.2"/>
             <!-- center text -->
-            <text id="gauge-val" x="100" y="95" text-anchor="middle" font-size="30" font-weight="900" fill="#1A202C" font-family="sans-serif">1,250</text>
-            <text x="100" y="114" text-anchor="middle" font-size="11" fill="#A0AEC0" font-family="sans-serif">Hari ini</text>
+            <text id="gauge-val" x="100" y="95" text-anchor="middle" font-size="30" font-weight="900" fill="#111827" font-family="sans-serif">1,250</text>
+            <text x="100" y="114" text-anchor="middle" font-size="11" fill="#9CA3AF" font-family="sans-serif">Hari ini</text>
           </svg>
         </div>
         <div class="gauge-range">
@@ -454,7 +454,7 @@
               <div class="wa-tag">Terkirim</div>
             </div>
             <div class="wa-log-item">
-              <div class="wa-icon" style="background:#FEF3E7">
+              <div class="wa-icon" style="background:var(--warn-l)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
               </div>
               <div class="wa-log-body">
