@@ -3,205 +3,224 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#1A3C8F"/>
+<meta name="theme-color" content="#090D1A"/>
+<meta name="description" content="EICHOFILT — Halaman AI Analytics Random Forest Classifier"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>EICHOFILT — AI Analytics</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+
+<!-- Chart.js CDN (tidak dipakai langsung di halaman ini, tapi disiapkan jika dibutuhkan) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- Stylesheet -->
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="sidebar-brand-area">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/></svg>
-      </div>
-      <div><div class="brand-name">EICHOFILT</div><div style="font-size:11px;color:var(--text-3)">Monitor Air Pintar</div></div>
-    </div>
-    <nav class="sidebar-nav-list">
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span>Peringatan</span></a>
-      <a class="nav-item active" href="ml.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>AI Analytics</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg><span>Filter</span></a>
-      <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Lainnya</span></a>
-    </nav>
-    <div class="sidebar-footer-area">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="online-dot"></span><span style="font-size:12px;font-weight:700;color:var(--ok)">Model Aktif</span></div>
-      <div style="font-size:10px;color:var(--text-3)">Random Forest · 150 pohon</div>
-    </div>
-  </aside>
 
+<div class="app">
   <div class="app-main">
+
+    <!-- ═══ TOPBAR ═══ -->
     <header class="topbar">
       <div class="topbar-brand">
-        <div class="brand-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/></svg></div>
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
+          </svg>
+        </div>
         <span class="brand-name">EICHOFILT</span>
       </div>
       <div class="topbar-right">
-        <button class="btn-sim" id="btn-infer">▶ Inferensi</button>
+        <button class="topbar-icon" id="btn-theme" title="Ubah Tema" aria-label="Toggle Theme" style="gap:6px; width:auto; padding:0 14px; font-size:12px; font-weight:800;">
+          <svg id="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; width:18px; height:18px;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="theme-label-sun" style="font-size:11px; font-weight:800; white-space:nowrap;">Terang</span>
+          <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none; width:18px; height:18px;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="theme-label-moon" style="font-size:11px; font-weight:800; white-space:nowrap; display:none;">Gelap</span>
+        </button>
+        <a href="index.html" class="btn-sim" style="text-decoration:none; display:inline-flex; align-items:center;">⬅ Kembali ke Dashboard</a>
       </div>
     </header>
 
-    <main class="page active" id="page-ml">
+    <!-- ═══ PAGE: AI ANALYTICS (Standalone) ═══ -->
+    <main class="page active" id="page-ml-page">
       <div class="page-header">
-        <div class="greeting">Prediksi Kualitas Air (AI)</div>
-        <div class="page-sub">Model: Random Forest</div>
+        <div class="greeting">Prediksi Kualitas Air (Machine Learning)</div>
+        <div class="page-sub">Model Klasifikasi: Random Forest (150 Decision Trees)</div>
       </div>
 
       <!-- AI Result Hero -->
       <div class="ai-result-card" id="ai-result-card">
         <div>
-          <div class="ai-result-label">Hasil Prediksi</div>
-          <div class="ai-result-val" id="ai-result-val">Baik</div>
+          <div class="ai-result-label">Hasil Klasifikasi AI</div>
+          <div class="ai-result-val ai-val-normal" id="ai-result-val">Normal</div>
         </div>
         <div style="text-align:center">
-          <div class="ai-conf-badge" id="ai-conf-badge">92%</div>
+          <div class="ai-conf-badge" id="ai-conf-badge">96.8%</div>
           <div class="ai-conf-label">Confidence</div>
         </div>
       </div>
 
-      <!-- Feature Importance -->
-      <div class="section-title">Top Feature Importance</div>
+      <!-- Top Feature Importance -->
+      <div class="section-title">Fitur Penting Model (Feature Importance)</div>
       <div class="card">
         <div class="card-body">
-          <div class="feature-list">
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Turbidity</span><span class="feature-val">0.42</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:100%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">TDS</span><span class="feature-val">0.28</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:67%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Aliran</span><span class="feature-val">0.17</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:40%"></div></div>
-            </div>
-            <div class="feature-row">
-              <div class="feature-row-head"><span class="feature-name">Membran</span><span class="feature-val">0.13</span></div>
-              <div class="feature-bar"><div class="feature-fill" style="width:31%"></div></div>
-            </div>
+          <div class="feature-list" id="fi-list">
+            <!-- Render dinamis dari ml_ui.js -->
           </div>
         </div>
       </div>
 
       <!-- Confusion Matrix -->
-      <div class="section-title">Confusion Matrix</div>
+      <div class="section-title">Confusion Matrix &amp; Metrik Akurasi</div>
       <div class="card">
         <div class="card-body">
           <table class="cm-table">
-            <thead><tr><th>Aktual</th><th colspan="2" style="text-align:center">Prediksi</th></tr><tr><th></th><th>Baik</th><th>Buruk</th></tr></thead>
-            <tbody>
-              <tr><td class="cm-row-label">Baik</td><td class="cm-hit">120</td><td class="cm-miss">8</td></tr>
-              <tr><td class="cm-row-label">Buruk</td><td class="cm-miss">6</td><td class="cm-hit">116</td></tr>
+            <thead>
+              <tr>
+                <th>Aktual</th>
+                <th colspan="3" style="text-align:center">Prediksi Model</th>
+              </tr>
+              <tr>
+                <th></th>
+                <th>Normal</th>
+                <th>Backwash</th>
+                <th>Ganti</th>
+              </tr>
+            </thead>
+            <tbody id="cm-tbody-custom">
+              <tr>
+                <td class="cm-row-label">Normal</td>
+                <td class="cm-hit">410</td>
+                <td class="cm-miss">8</td>
+                <td class="cm-miss">0</td>
+              </tr>
+              <tr>
+                <td class="cm-row-label">Backwash</td>
+                <td class="cm-miss">7</td>
+                <td class="cm-hit">98</td>
+                <td class="cm-miss">2</td>
+              </tr>
+              <tr>
+                <td class="cm-row-label">Ganti</td>
+                <td class="cm-miss">0</td>
+                <td class="cm-miss">1</td>
+                <td class="cm-hit">50</td>
+              </tr>
             </tbody>
           </table>
-          <div class="stat-grid" style="margin-top:14px">
-            <div class="stat-card"><div class="stat-label">Akurasi</div><div class="stat-val" style="font-size:20px">96.8%</div></div>
-            <div class="stat-card"><div class="stat-label">ROC-AUC</div><div class="stat-val" style="font-size:20px">0.992</div></div>
-            <div class="stat-card"><div class="stat-label">Precision</div><div class="stat-val" style="font-size:20px">95.2%</div></div>
-            <div class="stat-card"><div class="stat-label">Recall</div><div class="stat-val" style="font-size:20px">95.1%</div></div>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Akurasi</div>
+              <div class="stat-val" id="stat-acc">96.84%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ROC-AUC</div>
+              <div class="stat-val" id="stat-auc">0.9921</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">CV Mean</div>
+              <div class="stat-val" id="stat-cv">97.12%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Sampel Uji</div>
+              <div class="stat-val">576</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Sliders -->
-      <div class="section-title">Coba Sendiri (Simulasi Sensor)</div>
+      <!-- Live Sandbox Sliders -->
+      <div class="section-title">AI Sandbox (Uji Prediksi Mandiri)</div>
       <div class="card">
         <div class="card-body">
-          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px">
+          <div class="sandbox-sliders" id="sandbox-sliders-container">
             <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Turbidity (NTU)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-turb-val">0.35</span>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Kekentalan / Turbidity (NTU)</span>
+                <span id="vsl-turb" style="color:var(--primary); font-weight:800;">0.35 NTU</span>
               </div>
-              <input type="range" id="sl-turb" min="0" max="10" step="0.05" value="0.35" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
+              <input type="range" id="sl-turb" min="0" max="15" step="0.05" value="0.35" style="width:100%;" oninput="onSandboxSliderChange()"/>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">TDS (ppm)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-tds-val">128</span>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Kadar Garam / TDS (ppm)</span>
+                <span id="vsl-tds" style="color:var(--primary); font-weight:800;">128 ppm</span>
               </div>
-              <input type="range" id="sl-tds" min="0" max="800" step="1" value="128" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
+              <input type="range" id="sl-tds" min="50" max="800" step="1" value="128" style="width:100%;" oninput="onSandboxSliderChange()"/>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Aliran (L/min)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-flow-val">18.7</span>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Laju Aliran Air (L/min)</span>
+                <span id="vsl-flow" style="color:var(--primary); font-weight:800;">18.7 L/min</span>
               </div>
-              <input type="range" id="sl-flow" min="0" max="30" step="0.1" value="18.7" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
+              <input type="range" id="sl-flow" min="0.2" max="30" step="0.1" value="18.7" style="width:100%;" oninput="onSandboxSliderChange()"/>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:13px;font-weight:700">Membran (%)</span>
-                <span style="font-size:13px;font-weight:700;color:var(--primary)" id="sl-life-val">92</span>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Membran (%)</span>
+                <span id="vsl-life" style="color:var(--primary); font-weight:800;">92 %</span>
               </div>
-              <input type="range" id="sl-life" min="0" max="100" step="1" value="92" style="width:100%;accent-color:var(--primary)" oninput="onSliderChange()"/>
+              <input type="range" id="sl-life" min="0" max="100" step="1" value="92" style="width:100%;" oninput="onSandboxSliderChange()"/>
             </div>
           </div>
-          <div style="background:var(--bg);border-radius:10px;padding:14px">
-            <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Hasil Prediksi Real-time</div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <div style="font-size:22px;font-weight:900;color:var(--ok)" id="sl-result">Baik</div>
+          <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 2px solid var(--border); padding:18px; margin-top:20px;">
+            <div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Hasil Prediksi Real-time</div>
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-size:24px; font-weight:900; color:var(--ok)" id="sandbox-result">Normal</div>
               <div style="text-align:right">
-                <div style="font-size:11px;color:var(--text-3)">Confidence</div>
-                <div style="font-size:18px;font-weight:900;color:var(--primary)" id="sl-conf">94%</div>
+                <div style="font-size:11px; color:var(--text-muted); font-weight:700;">Confidence</div>
+                <div style="font-size:20px; font-weight:900; color:var(--primary)" id="sandbox-conf">98.5%</div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision Tree SVG Structure -->
+      <div class="section-title">Visualisasi Struktur Pohon Keputusan (Decision Tree)</div>
+      <div class="card">
+        <div class="card-body">
+          <div id="tree-wrap" style="width:100%; overflow-x:auto;">
+            <!-- Rendered dynamically as SVG by ml_ui.js -->
           </div>
         </div>
       </div>
     </main>
+
   </div>
 </div>
 
-<nav class="bottom-nav">
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span>Peringatan</span></a>
-  <a class="nav-item active" href="ml.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>AI Analytics</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg><span>Filter</span></a>
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Lainnya</span></a>
-</nav>
-
 <div class="toast" id="toast"></div>
 
+<!-- ==========================================================================
+   JAVASCRIPT — Halaman ML standalone, hanya memuat modul yang relevan
+   ========================================================================== -->
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ml.js"></script>
+<script src="js/ml_data.js"></script>
+<script src="js/ml_ui.js"></script>
+<script src="js/ml_app.js"></script>
+
 <script>
-function classify(turb,tds,flow,life){
-  turb=Math.max(0,Math.min(turb||0,100));tds=Math.max(0,Math.min(tds||0,2000));
-  flow=Math.max(0,Math.min(flow||0,50));life=Math.max(0,Math.min(life||0,100));
-  let bad=0;
-  if(turb>5)bad+=.4;else if(turb>2)bad+=.2;
-  if(tds>400)bad+=.3;else if(tds>200)bad+=.1;
-  if(flow<5)bad+=.2;
-  if(life<30)bad+=.2;else if(life<60)bad+=.1;
-  const conf=bad>.5?Math.min(99,Math.round(50+bad*49)):Math.min(99,Math.round(50+(1-bad)*49));
-  return{label:bad>.5?'Buruk':'Baik',conf};
-}
-function onSliderChange(){
-  const turb=parseFloat(document.getElementById('sl-turb')?.value||0);
-  const tds=parseFloat(document.getElementById('sl-tds')?.value||0);
-  const flow=parseFloat(document.getElementById('sl-flow')?.value||0);
-  const life=parseFloat(document.getElementById('sl-life')?.value||0);
-  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  s('sl-turb-val',turb.toFixed(2));s('sl-tds-val',Math.round(tds));
-  s('sl-flow-val',flow.toFixed(1));s('sl-life-val',Math.round(life));
-  const res=classify(turb,tds,flow,life);
-  const ok=res.label==='Baik';
-  const resEl=document.getElementById('sl-result');
-  if(resEl){resEl.textContent=res.label;resEl.style.color=ok?'var(--ok)':'var(--crit)';}
-  s('sl-conf',res.conf+'%');
-  const heroEl=document.getElementById('ai-result-val');
-  const card=document.getElementById('ai-result-card');
-  const badge=document.getElementById('ai-conf-badge');
-  if(heroEl){heroEl.textContent=res.label;heroEl.style.color=ok?'var(--ok)':'var(--crit)';}
-  if(card) card.style.background=ok?'var(--green-l)':'var(--crit-l)';
-  if(badge){badge.textContent=res.conf+'%';badge.style.background=ok?'var(--ok)':'var(--crit)';}
-}
-const btn=document.getElementById('btn-infer');
-if(btn) btn.addEventListener('click',()=>{
-  btn.textContent='⏳...';
-  setTimeout(()=>{onSliderChange();btn.textContent='▶ Inferensi';},500);
+'use strict';
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  renderMLFeatureImportance();
+  renderDecisionTreeSVG();
+  onSandboxSliderChange();
 });
-document.addEventListener('DOMContentLoaded',onSliderChange);
 </script>
 </body>
 </html>
