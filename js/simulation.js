@@ -1,133 +1,124 @@
-/* ============================================
+/* ==========================================================================
    EICHOFILT — simulation.js
-   Live sensor updates, simulation, backwash
-   ============================================ */
+   Simpan Sensor ke MySQL (Mock), Update Metrics, Auto-Backwash, Mode Simulasi
+   ========================================================================== */
+'use strict';
 
-// ---- METRIC UPDATER ----
+function saveSensorToMySQL(turb, tds, flow, life) {
+  MockMySQL.query('save_sensor', {
+    turbidity: turb,
+    tds: tds,
+    flow_rate: flow,
+    membrane_life: life,
+    p1: state.saturation.p1,
+    p2: state.saturation.p2,
+    p3: state.saturation.p3
+  }).then(res => {
+    const syncEl = document.getElementById('last-sync');
+    if (syncEl) syncEl.textContent = 'Sinkronisasi Database MySQL: Berhasil (ID: ' + res.id + ')';
+  });
+}
+
+function saveLogToMySQL(msg, type) {
+  MockMySQL.query('save_log', { pesan: msg, tipe_tag: type }).then(() => {
+    updateLogListFromDB();
+  });
+}
+
 function updateMetrics(turb, tds, flow, life) {
   state.currentTurb = turb;
   state.currentTds = tds;
   state.currentFlow = flow;
   state.currentLife = life;
 
-  document.getElementById('m-turb').textContent = turb.toFixed(1);
-  document.getElementById('m-tds').textContent = Math.round(tds);
-  document.getElementById('m-flow').textContent = flow.toFixed(1);
-  document.getElementById('m-life').textContent = Math.round(life);
+  const mt = document.getElementById('m-turb');
+  const mtd = document.getElementById('m-tds');
+  const mf = document.getElementById('m-flow');
+  const ml = document.getElementById('m-life');
 
-  // Turbidity status
+  if (mt) mt.textContent = turb.toFixed(2);
+  if (mtd) mtd.textContent = Math.round(tds);
+  if (mf) mf.textContent = flow.toFixed(1);
+  if (ml) ml.textContent = Math.round(life);
+
+  saveSensorToMySQL(turb, tds, flow, life);
+
   const dTurb = document.getElementById('d-turb');
   const badge = document.getElementById('sys-badge');
+  const badgeText = document.getElementById('badge-text');
   const mlNow = document.getElementById('ml-now');
 
   if (turb >= THRESHOLDS.turbidity.crit) {
-    dTurb.className = 'metric-delta up';
-    dTurb.textContent = '▴ melebihi batas kritis!';
-    badge.className = 'system-badge crit';
-    badge.textContent = '● peringatan kritis';
-    mlNow.className = 'ml-badge replace';
-    mlNow.textContent = 'Ganti Membran';
-    setLayerStatus('ls-1', 'crit', 'KRITIS');
-    setLayerStatus('ls-2', 'crit', 'KRITIS');
+    if (dTurb) { dTurb.className = 'metric-status-tag crit'; dTurb.textContent = 'Darurat!'; }
+    if (badge) { badge.className = 'crit-badge'; }
+    if (badgeText) { badgeText.textContent = 'Darurat'; }
+    if (mlNow) { mlNow.className = 'ml-badge replace'; mlNow.textContent = 'Ganti Membran'; mlNow.style.background = 'var(--crit-l)'; mlNow.style.color = 'var(--crit)'; mlNow.style.borderColor = 'var(--crit)'; }
     if (!state.backwashActive) triggerBackwash();
   } else if (turb >= THRESHOLDS.turbidity.warn) {
-    dTurb.className = 'metric-delta warn';
-    dTurb.textContent = '▴ mendekati batas';
-    badge.className = 'system-badge warn';
-    badge.textContent = '● perhatian';
-    mlNow.className = 'ml-badge backwash';
-    mlNow.textContent = 'Perlu Backwash';
-    setLayerStatus('ls-1', 'warn', 'WARN');
-    setLayerStatus('ls-2', 'warn', 'WARN');
+    if (dTurb) { dTurb.className = 'metric-status-tag warn'; dTurb.textContent = 'Perhatian'; }
+    if (badge) { badge.className = 'warn-badge'; }
+    if (badgeText) { badgeText.textContent = 'Perhatian'; }
+    if (mlNow) { mlNow.className = 'ml-badge backwash'; mlNow.textContent = 'Perlu Backwash'; mlNow.style.background = 'var(--warn-l)'; mlNow.style.color = 'var(--warn)'; mlNow.style.borderColor = 'var(--warn)'; }
   } else {
-    dTurb.className = 'metric-delta ok';
-    dTurb.textContent = '▾ dalam batas normal';
-    badge.className = 'system-badge';
-    badge.textContent = '● sistem aktif';
-    mlNow.className = 'ml-badge normal';
-    mlNow.textContent = 'Normal';
-    setLayerStatus('ls-1', 'ok', 'OK');
-    setLayerStatus('ls-2', 'ok', 'OK');
+    if (dTurb) { dTurb.className = 'metric-status-tag ok'; dTurb.textContent = 'Baik'; }
+    if (badge) { badge.className = 'online-badge'; }
+    if (badgeText) { badgeText.textContent = 'Online'; }
+    if (mlNow) { mlNow.className = 'ml-badge normal'; mlNow.textContent = 'Normal'; mlNow.style.background = 'var(--ok-l)'; mlNow.style.color = 'var(--ok)'; mlNow.style.borderColor = 'var(--ok)'; }
   }
 
-  // TDS status
+  // Update TDS status tag
   const dTds = document.getElementById('d-tds');
-  if (tds >= THRESHOLDS.tds.crit) {
-    dTds.className = 'metric-delta up';
-    dTds.textContent = '▴ tidak layak konsumsi';
-  } else if (tds >= THRESHOLDS.tds.warn) {
-    dTds.className = 'metric-delta warn';
-    dTds.textContent = '▴ perlu perhatian';
-  } else {
-    dTds.className = 'metric-delta ok';
-    dTds.textContent = '▾ layak konsumsi';
+  if (dTds) {
+    if (tds >= THRESHOLDS.tds.crit) { dTds.className = 'metric-status-tag crit'; dTds.textContent = 'Bahaya'; }
+    else if (tds >= THRESHOLDS.tds.warn) { dTds.className = 'metric-status-tag warn'; dTds.textContent = 'Perhatian'; }
+    else { dTds.className = 'metric-status-tag ok'; dTds.textContent = 'Baik'; }
   }
 
-  // Flow status
-  const dFlow = document.getElementById('d-flow');
-  if (flow < THRESHOLDS.flowRate.warn) {
-    dFlow.className = 'metric-delta warn';
-    dFlow.textContent = '▾ flux menurun';
-  } else {
-    dFlow.className = 'metric-delta ok';
-    dFlow.textContent = '→ stabil';
-  }
-
-  // Membrane life
+  // Update Membrane status tag
   const dLife = document.getElementById('d-life');
-  const days = Math.round(life / 4);
-  if (life <= THRESHOLDS.membrane.crit) {
-    dLife.className = 'metric-delta up';
-    dLife.textContent = '▴ segera ganti membran!';
-  } else if (life <= THRESHOLDS.membrane.warn) {
-    dLife.className = 'metric-delta warn';
-    dLife.textContent = '▴ ~' + days + ' hari lagi';
-  } else {
-    dLife.className = 'metric-delta ok';
-    dLife.textContent = '▸ ~' + days + ' hari lagi';
+  if (dLife) {
+    if (life <= THRESHOLDS.membrane.crit) { dLife.className = 'metric-status-tag crit'; dLife.textContent = 'Ganti!'; }
+    else if (life <= THRESHOLDS.membrane.warn) { dLife.className = 'metric-status-tag warn'; dLife.textContent = 'Dekat Habis'; }
+    else { dLife.className = 'metric-status-tag ok'; dLife.textContent = 'Baik'; }
+  }
+
+  // Live Machine Learning Real-time Prediction
+  const rfRes = rfClassify(turb, tds, flow, 7.2, 12, 0.2);
+  const names = ['Normal', 'Perlu Backwash', 'Ganti Membran'];
+  const colors = ['var(--ok)', 'var(--warn)', 'var(--crit)'];
+  const colorsClasses = ['ai-val-normal', 'ai-val-warn', 'ai-val-crit'];
+  const mlNowEl = document.getElementById('ml-now');
+  const mlConfEl = document.getElementById('ml-conf');
+  const aiResultVal = document.getElementById('ai-result-val');
+  const aiConfBadge = document.getElementById('ai-conf-badge');
+
+  if (mlNowEl) {
+    mlNowEl.textContent = names[rfRes.prediction];
+    mlNowEl.style.color = colors[rfRes.prediction];
+    mlNowEl.style.borderColor = colors[rfRes.prediction];
+    mlNowEl.style.background = colors[rfRes.prediction] + '15';
+  }
+  if (mlConfEl) {
+    mlConfEl.textContent = 'Keyakinan AI: ' + (rfRes.probabilities[rfRes.prediction] * 100).toFixed(1) + '%';
+  }
+
+  // AI Page Hero card update
+  if (aiResultVal) {
+    aiResultVal.textContent = names[rfRes.prediction];
+    aiResultVal.className = 'ai-result-val ' + colorsClasses[rfRes.prediction];
+  }
+  if (aiConfBadge) {
+    const confVal = (rfRes.probabilities[rfRes.prediction] * 100).toFixed(1);
+    aiConfBadge.textContent = confVal + '%';
+  }
+  // Dynamic gradient background on AI hero card by prediction status
+  const aiCard = document.getElementById('ai-result-card');
+  if (aiCard) {
+    aiCard.classList.remove('status-normal', 'status-warn', 'status-crit');
+    aiCard.classList.add(['status-normal','status-warn','status-crit'][rfRes.prediction]);
   }
 }
 
-function setLayerStatus(id, cls, text) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.className = 'layer-status ' + cls;
-  el.textContent = text;
-}
-
-// ---- SATURATION ----
-function updateSaturation(p1, p2, p3) {
-  state.saturation = { p1, p2, p3 };
-
-  const fills = ['p1-fill', 'p2-fill', 'p3-fill'];
-  const vals = ['p1-val', 'p2-val', 'p3-val'];
-  const pcts = [p1, p2, p3];
-  const baseClasses = ['green', 'blue', 'gray'];
-
-  pcts.forEach((pct, i) => {
-    const fillEl = document.getElementById(fills[i]);
-    const valEl = document.getElementById(vals[i]);
-    if (!fillEl || !valEl) return;
-
-    fillEl.style.width = Math.min(pct, 100) + '%';
-    valEl.textContent = Math.round(pct) + '%';
-
-    fillEl.className = 'progress-fill';
-    if (pct >= 80) fillEl.classList.add('red');
-    else if (pct >= 60) fillEl.classList.add('amber');
-    else fillEl.classList.add(baseClasses[i]);
-  });
-
-  // Sync filter detail page
-  const fd1 = document.getElementById('fd-p1');
-  const fd2 = document.getElementById('fd-p2');
-  const fd3 = document.getElementById('fd-p3');
-  if (fd1) fd1.textContent = Math.round(p1) + '%';
-  if (fd2) fd2.textContent = Math.round(p2) + '%';
-  if (fd3) fd3.textContent = Math.round(p3) + '%';
-}
-
-// ---- BACKWASH ----
 function triggerBackwash() {
   if (state.backwashActive) return;
   state.backwashActive = true;
@@ -135,9 +126,12 @@ function triggerBackwash() {
 
   const banner = document.getElementById('backwash-banner');
   const timerEl = document.getElementById('bw-timer');
+  const notifDot = document.getElementById('notif-dot');
   if (banner) banner.style.display = 'flex';
+  if (notifDot) notifDot.style.display = 'block';
 
-  addLog('ALERT: Turbidity tinggi — solenoid valve aktif, Smart Auto-Backwash dimulai', 'red');
+  saveLogToMySQL('ALERT: Turbidity terdeteksi tinggi — Smart Auto-Backwash otomatis aktif!', 'warn');
+  showToast('⚡ Auto-Backwash Aktif!');
 
   clearInterval(state.bwInterval);
   state.bwInterval = setInterval(() => {
@@ -147,85 +141,45 @@ function triggerBackwash() {
       clearInterval(state.bwInterval);
       state.backwashActive = false;
       if (banner) banner.style.display = 'none';
-      addLog('Backwash selesai — solenoid valve menutup, sistem kembali normal', 'green');
+      if (notifDot) notifDot.style.display = 'none';
+      saveLogToMySQL('Proses Backwash Mandiri Selesai. Sistem EICHOFILT kembali bersih.', 'info');
+      showToast('✅ Backwash Selesai!');
+
+      // Update zero waste impact
+      state.zwResidu += 2.5;
+      state.zwAquatup = Math.min(100, state.zwAquatup + 5);
+      renderZeroWasteMetrics();
     }
   }, 1000);
 }
 
-// ---- LOG ----
-function addLog(msg, color) {
-  const now = new Date();
-  const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-  const list = document.getElementById('log-list');
-  if (!list) return;
-
-  const item = document.createElement('div');
-  item.className = 'log-item';
-  item.innerHTML =
-    '<span class="log-time">' + t + '</span>' +
-    '<span class="log-dot ' + color + '"></span>' +
-    '<span class="log-msg">' + msg + '</span>';
-
-  list.insertBefore(item, list.firstChild);
-
-  // Keep max 20 entries
-  while (list.children.length > 20) {
-    list.removeChild(list.lastChild);
-  }
-}
-
-// ---- LIVE JITTER (non-sim mode) ----
-function startLiveUpdates() {
-  state.liveInterval = setInterval(() => {
-    if (state.simMode) return;
-
-    const last = state.turbData[state.turbData.length - 1];
-    const jitter = +(Math.random() * 0.6 - 0.3).toFixed(2);
-    const next = Math.max(1.5, Math.min(5.8, last + jitter));
-
-    state.turbData = [...state.turbData.slice(1), next];
-    updateTrendChart();
-    updateMetrics(next, state.currentTds, state.currentFlow, state.currentLife);
-
-    document.getElementById('last-sync').textContent =
-      'Sinkronisasi: baru saja · ' + new Date().toLocaleTimeString('id-ID');
-  }, 4000);
-}
-
-// ---- SIMULATION ----
 function toggleSim() {
   const btn = document.getElementById('btn-sim');
   state.simMode = !state.simMode;
 
   if (state.simMode) {
     state.simStep = 0;
-    if (btn) btn.classList.add('active');
-    if (btn) btn.textContent = 'Stop Sim';
-    addLog('Simulasi skenario kenaikan turbidity dimulai...', 'blue');
+    if (btn) { btn.classList.add('active'); btn.textContent = '⏹ Stop Sim'; }
+    saveLogToMySQL('Simulasi Kenaikan Polusi Kekeruhan (Turbidity) dimulai oleh Pengguna.', 'info');
 
     state.simInterval = setInterval(() => {
-      if (state.simStep >= SIM_SCENARIO.length) {
-        stopSim();
-        return;
-      }
+      if (state.simStep >= SIM_SCENARIO.length) { stopSim(); return; }
 
       const t = SIM_SCENARIO[state.simStep];
-      const tds = Math.round(state.currentTds + state.simStep * 2.5);
-      const flow = Math.max(1.0, state.currentFlow - state.simStep * 0.05);
-      const life = Math.max(5, state.currentLife - state.simStep * 5);
+      const tds = Math.round(128 + state.simStep * 18);
+      const flow = Math.max(4.0, 18.7 - state.simStep * 1.2);
+      const life = Math.max(10, 92 - state.simStep * 6);
 
-      state.turbData = [...state.turbData.slice(1), t];
-      updateTrendChart();
       updateMetrics(t, tds, flow, life);
+      updateTrendChartFromDB();
 
-      const p1 = Math.min(95, 28 + state.simStep * 6);
-      const p2 = Math.min(95, 27 + state.simStep * 7);
-      const p3 = Math.min(95, 19 + state.simStep * 4);
-      updateSaturation(p1, p2, p3);
+      // update filter saturation
+      state.saturation.p1 = Math.min(95, 28 + state.simStep * 6);
+      state.saturation.p2 = Math.min(95, 27 + state.simStep * 7);
+      state.saturation.p3 = Math.min(95, 19 + state.simStep * 4);
 
       state.simStep++;
     }, 1800);
-
   } else {
     stopSim();
   }
@@ -235,16 +189,10 @@ function stopSim() {
   clearInterval(state.simInterval);
   state.simMode = false;
   state.simStep = 0;
-
   const btn = document.getElementById('btn-sim');
-  if (btn) { btn.classList.remove('active'); btn.textContent = 'Simulasi'; }
-
-  // Reset
-  state.turbData = [...BASE_TURB];
-  state.tdsData = [...BASE_TDS];
-  updateTrendChart();
-  updateMetrics(4.2, 187, 2.1, 73);
-  updateSaturation(28, 27, 19);
-
-  addLog('Simulasi dihentikan — data kembali ke kondisi baseline', 'blue');
+  if (btn) { btn.classList.remove('active'); btn.textContent = '▶ Simulasi'; }
+  saveLogToMySQL('Simulasi dinonaktifkan. Data sensor kembali ke baseline aman.', 'info');
+  updateMetrics(0.35, 128, 18.7, 92);
+  state.saturation = { p1: 28, p2: 27, p3: 19 };
+  updateTrendChartFromDB();
 }
