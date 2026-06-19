@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#0F4C5C"/>
+<meta name="theme-color" content="#090D1A"/>
 <meta name="description" content="EICHOFILT — Sistem pemantauan kualitas air rumah tangga"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<title>EICHOFILT</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<title>EICHOFILT — Web App Terintegrasi</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- Stylesheet -->
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
@@ -18,24 +22,24 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand-area">
       <div class="brand-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
           <path d="M12 11c0 0-2.5 2-2.5 3.5a2.5 2.5 0 005 0C14.5 13 12 11 12 11z"/>
         </svg>
       </div>
       <div>
         <div class="brand-name">EICHOFILT</div>
-        <div style="font-size:11px;color:var(--text-3)">Monitor Air Pintar</div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:700;">PRO PREMIUM IoT</div>
       </div>
     </div>
 
     <nav class="sidebar-nav-list">
       <a class="nav-item active" data-page="dashboard" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
         </svg>
-        <span>Dashbo</span>
+        <span>Dashboard</span>
       </a>
       <a class="nav-item" data-page="peringatan" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -43,9 +47,9 @@
         </svg>
         <span>Peringatan</span>
       </a>
-      <a class="nav-item" href="ml.html">
+      <a class="nav-item" data-page="ml-page" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
-          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
         </svg>
         <span>AI Analytics</span>
       </a>
@@ -64,11 +68,11 @@
     </nav>
 
     <div class="sidebar-footer-area">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
         <span class="online-dot"></span>
-        <span style="font-size:12px;font-weight:700;color:var(--ok)">ESP32 Online</span>
+        <span style="font-size:13px;font-weight:800;color:var(--ok)">Sistem Aktif</span>
       </div>
-      <div style="font-size:10px;color:var(--text-3)">MQTT · HiveMQ · InfluxDB</div>
+      <div style="font-size:11px;color:var(--text-muted);font-weight:600;">MySQL Terkoneksi</div>
     </div>
   </aside>
 
@@ -78,18 +82,39 @@
     <header class="topbar">
       <div class="topbar-brand">
         <div class="brand-logo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
           </svg>
         </div>
         <span class="brand-name">EICHOFILT</span>
       </div>
       <div class="topbar-right">
-        <div class="topbar-icon">
+        <!-- Light / Dark Mode Toggle — lebih jelas di HP -->
+        <button class="topbar-icon" id="btn-theme" title="Ubah Tema" aria-label="Toggle Theme" style="gap:6px; width:auto; padding:0 14px; font-size:12px; font-weight:800;">
+          <!-- Sun Icon (visible in dark mode) -->
+          <svg id="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; width:18px; height:18px;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="theme-label-sun" style="font-size:11px; font-weight:800; white-space:nowrap;">Terang</span>
+          <!-- Moon Icon (visible in light mode) -->
+          <svg id="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none; width:18px; height:18px;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="theme-label-moon" style="font-size:11px; font-weight:800; white-space:nowrap; display:none;">Gelap</span>
+        </button>
+        <div class="topbar-icon" id="bell-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
           </svg>
-          <span class="notif-dot" id="notif-dot"></span>
+          <span class="notif-dot" id="notif-dot" style="display:none"></span>
         </div>
         <button class="btn-sim" id="btn-sim">▶ Simulasi</button>
       </div>
@@ -97,13 +122,11 @@
 
     <!-- ═══ PAGE: DASHBOARD ═══ -->
     <main class="page active" id="page-dashboard">
-
-      <!-- Greeting -->
       <div class="page-header">
         <div class="page-header-row">
           <div>
             <div class="greeting">Halo, Admin! 👋</div>
-            <div class="page-sub">Sistem beroperasi normal</div>
+            <div class="page-sub">Panel IoT pemantauan kualitas air dinamis</div>
           </div>
           <div class="online-badge" id="sys-badge">
             <span class="online-dot"></span>
@@ -112,39 +135,35 @@
         </div>
       </div>
 
-      <!-- Backwash Alert -->
-      <div class="alert-banner warn" id="bw-banner" style="display:none">
+      <!-- Backwash Alert Banner -->
+      <div class="alert-banner warn" id="backwash-banner" style="display:none">
         <div class="alert-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
         </div>
         <div class="alert-body">
-          <div class="alert-title">Backwash Sedang Aktif</div>
-          <div class="alert-desc">Sistem melakukan backwash otomatis</div>
+          <div class="alert-title">Solenoid Valve Aktif: Auto-Backwash Sedang Berlangsung!</div>
+          <div class="alert-desc">Sistem melakukan pencucian balik membran otomatis untuk menyaring endapan.</div>
           <div class="alert-time" id="bw-timer">00:30</div>
         </div>
       </div>
 
-      <!-- Section: Dashboard Utama -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div class="section-title" style="margin:0">Dashboard Utama</div>
         <div class="time-filter">
           24 Jam Terakhir
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
         </div>
       </div>
 
       <!-- 4 Metric Cards -->
       <div class="metric-grid">
-        <!-- Turbidity -->
-        <div class="metric-card">
+        <div class="metric-card" id="card-turb">
           <div class="metric-card-top">
             <div class="metric-icon-wrap blue">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C12 2 5 8.5 5 13.5a7 7 0 0014 0C19 8.5 12 2 12 2z"/></svg>
             </div>
             <span class="metric-label">Turbidity</span>
           </div>
@@ -153,13 +172,10 @@
           <div class="metric-status-tag ok" id="d-turb">Baik</div>
         </div>
 
-        <!-- TDS -->
-        <div class="metric-card">
+        <div class="metric-card" id="card-tds">
           <div class="metric-card-top">
             <div class="metric-icon-wrap teal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             </div>
             <span class="metric-label">TDS</span>
           </div>
@@ -168,13 +184,10 @@
           <div class="metric-status-tag ok" id="d-tds">Baik</div>
         </div>
 
-        <!-- Aliran -->
-        <div class="metric-card">
+        <div class="metric-card" id="card-flow">
           <div class="metric-card-top">
             <div class="metric-icon-wrap orange">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
             <span class="metric-label">Aliran</span>
           </div>
@@ -183,14 +196,10 @@
           <div class="metric-status-tag opt" id="d-flow">Optimal</div>
         </div>
 
-        <!-- Membran -->
-        <div class="metric-card">
+        <div class="metric-card" id="card-life">
           <div class="metric-card-top">
             <div class="metric-icon-wrap green">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
             </div>
             <span class="metric-label">Membran</span>
           </div>
@@ -200,126 +209,234 @@
         </div>
       </div>
 
+      <!-- Live ML Status Indicator -->
+      <div style="margin-top:16px; background:var(--surface); padding:18px 24px; border-radius:var(--radius); border:1.5px solid var(--border); display:flex; justify-content:space-between; align-items:center; transition:background 0.3s,border-color 0.3s; box-shadow:var(--shadow);">
+        <div>
+          <span style="font-size:13.5px; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            Klasifikasi AI Real-time (Random Forest)
+          </span>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px; font-family:var(--f-mono);" id="ml-conf">Keyakinan AI: 98.5%</div>
+        </div>
+        <span id="ml-now" class="ml-badge normal" style="padding:7px 18px; border-radius:40px; font-weight:800; font-size:12.5px; background:var(--ok-l); color:var(--ok); border:1.5px solid var(--ok); box-shadow:0 2px 10px var(--ok-glow);">Normal</span>
+      </div>
+
       <!-- Trend Chart -->
-      <div class="card">
+      <div class="card" style="margin-top: 20px;">
         <div class="card-body">
-          <div class="chart-section-title">Tren 24 Jam Terakhir</div>
-          <div class="chart-legend">
-            <div class="legend-item">
-              <div class="legend-line" style="background:var(--primary)"></div>
-              Turbidity (NTU)
-            </div>
-            <div class="legend-item">
-              <div class="legend-line" style="background:var(--ok)"></div>
-              TDS (ppm)
-            </div>
-            <div class="legend-item">
-              <div class="legend-line" style="background:var(--warn)"></div>
-              Aliran (L/min)
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="chart-section-title" id="last-sync">Sinkronisasi Database: Terhubung</div>
+            <div style="font-size:11px; padding:4px 12px; border-radius:20px; background:var(--primary-l); color:var(--primary); font-weight:800; border: 1px solid var(--primary);">Simulated MySQL Connection</div>
           </div>
           <div class="chart-wrap">
             <canvas id="trendChart"></canvas>
           </div>
         </div>
       </div>
-
     </main>
 
     <!-- ═══ PAGE: PERINGATAN ═══ -->
     <main class="page" id="page-peringatan">
-
       <div class="page-header">
-        <div class="greeting">Peringatan</div>
-        <div class="page-sub">Status sistem saat ini</div>
+        <div class="greeting">Status &amp; Bar Sensor</div>
+        <div class="page-sub">Pembacaan sensor analog terkalibrasi secara presisi</div>
       </div>
 
-      <!-- Active alert -->
-      <div class="alert-banner warn" style="margin-bottom:16px">
-        <div class="alert-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-        </div>
-        <div class="alert-body">
-          <div class="alert-title">Backwash Sedang Aktif</div>
-          <div class="alert-desc">Sistem melakukan backwash otomatis</div>
-          <button class="alert-btn warn" onclick="navigateTo('dashboard')">Lihat Detail</button>
-        </div>
-      </div>
-
-      <!-- Status sensor -->
-      <div class="section-title">Status Sensor</div>
       <div class="card">
         <div class="card-body">
           <div class="sensor-list">
-            <div class="sensor-row">
-              <div class="sensor-row-head">
-                <span class="sensor-name">Turbidity</span>
-                <span class="sensor-val" id="pv-turb">0.85 NTU</span>
+            <div class="sensor-row" style="margin-bottom: 20px;">
+              <div class="sensor-row-head" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span class="sensor-name" style="font-weight: 700;">Turbidity (Kekeruhan)</span>
+                <span class="sensor-val" id="pv-turb" style="font-weight: 800; color: var(--primary);">0.35 NTU</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill orange" id="pb-turb" style="width:17%"></div>
+                <div class="progress-fill green" id="pb-turb" style="width:10%"></div>
+              </div>
+            </div>
+            <div class="sensor-row" style="margin-bottom: 20px;">
+              <div class="sensor-row-head" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span class="sensor-name" style="font-weight: 700;">TDS (Total Padatan Terlarut)</span>
+                <span class="sensor-val" id="pv-tds" style="font-weight: 800; color: var(--ok);">128 ppm</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill green" id="pb-tds" style="width:25%"></div>
+              </div>
+            </div>
+            <div class="sensor-row" style="margin-bottom: 20px;">
+              <div class="sensor-row-head" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span class="sensor-name" style="font-weight: 700;">Aliran Air (Flow Rate)</span>
+                <span class="sensor-val" id="pv-flow" style="font-weight: 800; color: var(--secondary);">18.7 L/min</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill blue" id="pb-flow" style="width:62%"></div>
               </div>
             </div>
             <div class="sensor-row">
               <div class="sensor-row-head">
-                <span class="sensor-name">TDS</span>
-                <span class="sensor-val" id="pv-tds">186 ppm</span>
+                <span class="sensor-name">Masa Pakai Membran Filtrasi</span>
+                <span class="sensor-val" id="pv-life">92%</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill red" id="pb-tds" style="width:37%"></div>
+                <div class="progress-fill green" id="pb-life" style="width:92%"></div>
               </div>
             </div>
-            <div class="sensor-row">
-              <div class="sensor-row-head">
-                <span class="sensor-name">Aliran</span>
-                <span class="sensor-val" id="pv-flow">12.4 L/min</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill green" id="pb-flow" style="width:62%"></div>
-              </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ═══ PAGE: AI ANALYTICS ═══ -->
+    <main class="page" id="page-ml-page">
+      <div class="page-header">
+        <div class="greeting">Prediksi Kualitas Air (Machine Learning)</div>
+        <div class="page-sub">Model Klasifikasi: Random Forest (150 Decision Trees)</div>
+      </div>
+
+      <!-- AI Result Hero -->
+      <div class="ai-result-card" id="ai-result-card">
+        <div>
+          <div class="ai-result-label">Hasil Klasifikasi AI</div>
+          <div class="ai-result-val ai-val-normal" id="ai-result-val">Normal</div>
+        </div>
+        <div style="text-align:center">
+          <div class="ai-conf-badge" id="ai-conf-badge">96.8%</div>
+          <div class="ai-conf-label">Confidence</div>
+        </div>
+      </div>
+
+      <!-- Top Feature Importance -->
+      <div class="section-title">Fitur Penting Model (Feature Importance)</div>
+      <div class="card">
+        <div class="card-body">
+          <div class="feature-list" id="fi-list">
+            <!-- Render dinamis dari ml_ui.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Confusion Matrix -->
+      <div class="section-title">Confusion Matrix &amp; Metrik Akurasi</div>
+      <div class="card">
+        <div class="card-body">
+          <table class="cm-table">
+            <thead>
+              <tr>
+                <th>Aktual</th>
+                <th colspan="3" style="text-align:center">Prediksi Model</th>
+              </tr>
+              <tr>
+                <th></th>
+                <th>Normal</th>
+                <th>Backwash</th>
+                <th>Ganti</th>
+              </tr>
+            </thead>
+            <tbody id="cm-tbody-custom">
+              <tr>
+                <td class="cm-row-label">Normal</td>
+                <td class="cm-hit">410</td>
+                <td class="cm-miss">8</td>
+                <td class="cm-miss">0</td>
+              </tr>
+              <tr>
+                <td class="cm-row-label">Backwash</td>
+                <td class="cm-miss">7</td>
+                <td class="cm-hit">98</td>
+                <td class="cm-miss">2</td>
+              </tr>
+              <tr>
+                <td class="cm-row-label">Ganti</td>
+                <td class="cm-miss">0</td>
+                <td class="cm-miss">1</td>
+                <td class="cm-hit">50</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Akurasi</div>
+              <div class="stat-val" id="stat-acc">96.84%</div>
             </div>
-            <div class="sensor-row">
-              <div class="sensor-row-head">
-                <span class="sensor-name">Membran</span>
-                <span class="sensor-val" id="pv-life">72%</span>
+            <div class="stat-card">
+              <div class="stat-label">ROC-AUC</div>
+              <div class="stat-val" id="stat-auc">0.9921</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">CV Mean</div>
+              <div class="stat-val" id="stat-cv">97.12%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Sampel Uji</div>
+              <div class="stat-val">576</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Sandbox Sliders -->
+      <div class="section-title">AI Sandbox (Uji Prediksi Mandiri)</div>
+      <div class="card">
+        <div class="card-body">
+          <div class="sandbox-sliders" id="sandbox-sliders-container">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Kekentalan / Turbidity (NTU)</span>
+                <span id="vsl-turb" style="color:var(--primary); font-weight:800;">0.35 NTU</span>
               </div>
-              <div class="progress-bar">
-                <div class="progress-fill orange" id="pb-life" style="width:72%"></div>
+              <input type="range" id="sl-turb" min="0" max="15" step="0.05" value="0.35" style="width:100%;" oninput="onSandboxSliderChange()"/>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Kadar Garam / TDS (ppm)</span>
+                <span id="vsl-tds" style="color:var(--primary); font-weight:800;">128 ppm</span>
+              </div>
+              <input type="range" id="sl-tds" min="50" max="800" step="1" value="128" style="width:100%;" oninput="onSandboxSliderChange()"/>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Laju Aliran Air (L/min)</span>
+                <span id="vsl-flow" style="color:var(--primary); font-weight:800;">18.7 L/min</span>
+              </div>
+              <input type="range" id="sl-flow" min="0.2" max="30" step="0.1" value="18.7" style="width:100%;" oninput="onSandboxSliderChange()"/>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:13.5px; font-weight:800; margin-bottom:6px;">
+                <span>Membran (%)</span>
+                <span id="vsl-life" style="color:var(--primary); font-weight:800;">92 %</span>
+              </div>
+              <input type="range" id="sl-life" min="0" max="100" step="1" value="92" style="width:100%;" oninput="onSandboxSliderChange()"/>
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 2px solid var(--border); padding:18px; margin-top:20px;">
+            <div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Hasil Prediksi Real-time</div>
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-size:24px; font-weight:900; color:var(--ok)" id="sandbox-result">Normal</div>
+              <div style="text-align:right">
+                <div style="font-size:11px; color:var(--text-muted); font-weight:700;">Confidence</div>
+                <div style="font-size:20px; font-weight:900; color:var(--primary)" id="sandbox-conf">98.5%</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Status sistem -->
-      <div class="section-title">Status Sistem</div>
-      <div class="status-card">
-        <div class="status-card-row">
-          <div class="status-card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          </div>
-          <div>
-            <div class="status-card-title">Backwash aktif sejak</div>
-            <div class="status-card-sub">10:32 WIB</div>
+      <!-- Decision Tree SVG Structure -->
+      <div class="section-title">Visualisasi Struktur Pohon Keputusan (Decision Tree)</div>
+      <div class="card">
+        <div class="card-body">
+          <div id="tree-wrap" style="width:100%; overflow-x:auto;">
+            <!-- Rendered dynamically as SVG by ml_ui.js -->
           </div>
         </div>
-        <button class="btn-outline-primary" onclick="navigateTo('dashboard')">Lihat Detail</button>
       </div>
-
     </main>
 
     <!-- ═══ PAGE: FILTER ═══ -->
     <main class="page" id="page-filter">
-
       <div class="page-header">
-        <div class="greeting">Saturasi Filter</div>
-        <div class="page-sub">Kondisi masing-masing lapisan</div>
+        <div class="greeting">Saturasi Lapisan Filter</div>
+        <div class="page-sub">Persentase tingkat penyumbatan filter saat ini</div>
       </div>
 
       <div class="card">
@@ -327,293 +444,149 @@
           <div class="filter-list">
             <div class="filter-item">
               <div class="filter-item-head">
-                <span class="filter-item-name">Filter L1 (Pasir Silika)</span>
+                <span class="filter-item-name">Lapisan Kesatu (Pasir Silika)</span>
                 <span class="filter-item-pct" id="fp1">28%</span>
               </div>
               <div class="filter-progress">
                 <div class="filter-fill green" id="ff1" style="width:28%"></div>
               </div>
-              <div class="filter-desc">Filtrasi partikel makro &amp; lumpur</div>
+              <div class="filter-desc">Menyaring kotoran fisik, lumpur kasar, and endapan tanah.</div>
             </div>
 
             <div class="filter-item">
               <div class="filter-item-head">
-                <span class="filter-item-name">Filter L2 (Membran CNF)</span>
+                <span class="filter-item-name">Lapisan Kedua (Membran CNF)</span>
                 <span class="filter-item-pct" id="fp2">27%</span>
               </div>
               <div class="filter-progress">
                 <div class="filter-fill green" id="ff2" style="width:27%"></div>
               </div>
-              <div class="filter-desc">Penjerapan mikroplastik &lt;100μm</div>
+              <div class="filter-desc">Menahan mikroplastik &amp; partikel mikro berukuran &lt;100μm.</div>
             </div>
 
             <div class="filter-item">
               <div class="filter-item-head">
-                <span class="filter-item-name">Filter L3 (Karbon Aktif)</span>
-                <span class="filter-item-pct warn" id="fp3">85%</span>
+                <span class="filter-item-name">Lapisan Ketiga (Karbon Aktif)</span>
+                <span class="filter-item-pct" id="fp3">19%</span>
               </div>
               <div class="filter-progress">
-                <div class="filter-fill red" id="ff3" style="width:85%"></div>
+                <div class="filter-fill green" id="ff3" style="width:19%"></div>
               </div>
-              <div class="filter-desc">Eliminasi bau, klorin &amp; organik</div>
+              <div class="filter-desc">Menghilangkan bau tak sedap, klorin bebas, zat kimia berbahaya, dan sisa organik.</div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Estimasi ganti filter -->
-      <div class="ganti-card">
-        <div class="ganti-icon">🗑️</div>
-        <div>
-          <div class="ganti-title">Estimasi Ganti Filter</div>
-          <div class="ganti-sub">L3 — Karbon Aktif</div>
-          <div class="ganti-sub" style="font-weight:700;color:var(--text)">5 Hari 08 Jam 32 Menit</div>
-        </div>
-      </div>
-
-      <button class="btn-outline-primary" style="margin-top:4px" onclick="showToast('Fitur riwayat filter segera hadir')">Riwayat Filter</button>
-
     </main>
 
-    <!-- ═══ PAGE: LAINNYA ═══ -->
+    <!-- ═══ PAGE: LAINNYA & DB LOGS ═══ -->
     <main class="page" id="page-lainnya">
-
       <div class="page-header">
-        <div class="greeting">Lainnya</div>
+        <div class="greeting">Dampak Zero-Waste &amp; Log Database</div>
+        <div class="page-sub">Kontribusi nyata terhadap pelestarian lingkungan hidup</div>
       </div>
 
-      <!-- Zero Waste -->
-      <div class="section-title" style="margin-top:0">Zero Waste Impact</div>
+      <!-- Zero Waste Impact metrics -->
+      <div class="section-title" style="margin-top:0">Dampak Ekologis (Zero Waste)</div>
       <div class="gauge-card">
-        <div class="gauge-label">Aquatup (Liter)</div>
+        <div class="gauge-label">Volume Residu Terkumpul di Aquatup</div>
         <div class="gauge-svg-wrap">
-          <svg class="gauge-svg" viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gauge aquatup">
-            <!-- track -->
-            <path d="M20 110 A80 80 0 0 1 180 110" stroke="var(--border)" stroke-width="16" stroke-linecap="round"/>
-            <!-- fill (62.5% of 180deg = ~112deg) -->
-            <path id="gauge-fill" d="M20 110 A80 80 0 0 1 180 110" stroke="#10B981" stroke-width="16" stroke-linecap="round"
-              stroke-dasharray="251.2" stroke-dashoffset="94.2"/>
-            <!-- center text -->
-            <text id="gauge-val" x="100" y="95" text-anchor="middle" font-size="30" font-weight="900" fill="#111827" font-family="sans-serif">1,250</text>
-            <text x="100" y="114" text-anchor="middle" font-size="11" fill="#9CA3AF" font-family="sans-serif">Hari ini</text>
+          <svg class="gauge-svg" viewBox="0 0 200 130" id="aquatup-svg-canvas">
+            <path d="M20 110 A80 80 0 0 1 180 110" stroke="var(--border)" stroke-width="14" stroke-linecap="round" fill="none"/>
+            <path id="gauge-fill" d="M20 110 A80 80 0 0 1 180 110" stroke="#00E676" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="180" fill="none"/>
+            <text id="gauge-val" x="100" y="85" text-anchor="middle" font-size="28" font-weight="900" fill="var(--text)">71%</text>
+            <text x="100" y="112" text-anchor="middle" font-size="11" fill="var(--text-muted)" font-family="sans-serif">Akumulasi Residu</text>
           </svg>
         </div>
-        <div class="gauge-range">
-          <span>0</span>
-          <span>2,000</span>
-        </div>
+        <button class="btn-outline-primary" style="margin-top:16px;" onclick="handleCleanWadah()">🧹 Bersihkan Wadah Aquatup</button>
       </div>
 
-      <!-- Residu -->
       <div class="residu-card">
         <div>
-          <div class="residu-label">Residu Mikroplastik</div>
-          <div class="residu-val">0.12 mg/L</div>
+          <div class="residu-label">Mikroplastik Terjaring Hari Ini</div>
+          <div class="residu-val" id="zw-residu-val">~14.7 gram</div>
         </div>
-        <div class="residu-tag low">Rendah</div>
+        <div class="residu-tag low" id="zw-residu-tag">Aman</div>
       </div>
 
-      <!-- Kontribusi SDGs -->
-      <div class="sdg-title">Kontribusi SDGs</div>
+      <div class="sdg-title">Dukungan Nyata Terhadap SDGs PBB</div>
       <div class="sdg-row">
         <div class="sdg-badge sdg-6">
           <span class="sdg-num">6</span>
-          <span>Clean Water and Sanitation</span>
+          <span>Akses Air Bersih</span>
         </div>
         <div class="sdg-badge sdg-12">
           <span class="sdg-num">12</span>
-          <span>Responsible Consumption</span>
+          <span>Konsumsi Bertanggungjawab</span>
         </div>
         <div class="sdg-badge sdg-14">
           <span class="sdg-num">14</span>
-          <span>Life Below Water</span>
+          <span>Ekosistem Air</span>
         </div>
       </div>
 
-      <!-- Asta Cita -->
       <div class="asta-card">
-        <div class="asta-title">Asta Cita</div>
-        <div class="asta-item">6. Membangun dari desa dan dari bawah untuk pemerataan ekonomi</div>
-        <div class="asta-item">7. Memperkuat reformasi politik, hukum, dan birokrasi</div>
+        <div class="asta-title">Pilar Asta Cita Nasional</div>
+        <div class="asta-item">Butir 6: Membangun dari pedesaan demi tercapainya pemerataan kesejahteraan, kesehatan, dan gizi air minum masyarakat.</div>
+        <div class="asta-item">Butir 7: Mengembangkan kemandirian riset sains, teknologi tepat guna, dan kelestarian lingkungan hidup berkelanjutan.</div>
       </div>
 
-      <!-- Riwayat WA -->
-      <div class="section-title">Riwayat WhatsApp (Fonnte)</div>
+      <!-- Real-time log database terminal -->
+      <div class="section-title">Aktivitas Database Real-time (Simulated MySQL API)</div>
       <div class="card">
-        <div class="card-body" style="padding-top:4px;padding-bottom:4px">
-          <div class="wa-log-list">
-            <div class="wa-log-item">
-              <div class="wa-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              </div>
-              <div class="wa-log-body">
-                <div class="wa-log-title">Backwash selesai</div>
-                <div class="wa-log-desc">Sistem backwash selesai</div>
-                <div class="wa-log-time">10:45 WIB</div>
-              </div>
-              <div class="wa-tag">Terkirim</div>
-            </div>
-            <div class="wa-log-item">
-              <div class="wa-icon" style="background:var(--warn-l)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-              </div>
-              <div class="wa-log-body">
-                <div class="wa-log-title">⚠ Alert: TDS Tinggi</div>
-                <div class="wa-log-desc">TDS melebihi ambang batas</div>
-                <div class="wa-log-time">10:32 WIB</div>
-              </div>
-              <div class="wa-tag">Terkirim</div>
-            </div>
-            <div class="wa-log-item">
-              <div class="wa-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              </div>
-              <div class="wa-log-body">
-                <div class="wa-log-title">Laporan Bulanan</div>
-                <div class="wa-log-desc">Laporan kualitas air - April 2025</div>
-                <div class="wa-log-time">Kemarin, 09:00</div>
-              </div>
-              <div class="wa-tag">Terkirim</div>
-            </div>
-            <div class="wa-log-item">
-              <div class="wa-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              </div>
-              <div class="wa-log-body">
-                <div class="wa-log-title">Pengingat Ganti Filter</div>
-                <div class="wa-log-desc">Filter L3 perlu diganti</div>
-                <div class="wa-log-time">2 Mei 2025, 08:30</div>
-              </div>
-              <div class="wa-tag">Terkirim</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="btn-primary" onclick="testWhatsApp()">Kirim Pesan Test</button>
-
-      <!-- Log Aktivitas -->
-      <div class="section-title">Log Aktivitas Sistem</div>
-      <div class="card">
-        <div class="card-body" style="padding-top:4px;padding-bottom:4px">
+        <div class="card-body" style="padding-top:4px; padding-bottom:4px">
           <div class="log-list" id="log-list">
-            <div class="log-row"><span class="log-time">10:45</span><span class="log-msg">Backwash selesai</span><span class="log-tag info">Info</span></div>
-            <div class="log-row"><span class="log-time">10:32</span><span class="log-msg">TDS melebihi ambang batas</span><span class="log-tag warn">Warning</span></div>
-            <div class="log-row"><span class="log-time">10:30</span><span class="log-msg">Backwash dimulai</span><span class="log-tag info">Info</span></div>
-            <div class="log-row"><span class="log-time">09:15</span><span class="log-msg">Filter L3 diganti</span><span class="log-tag info">Info</span></div>
-            <div class="log-row"><span class="log-time">08:00</span><span class="log-msg">Laporan harian dikirim</span><span class="log-tag info">Info</span></div>
+            <!-- Data Log masuk lewat AJAX via app.js -->
           </div>
         </div>
       </div>
-      <button class="btn-outline-primary" onclick="showToast('Memuat semua log...')">Lihat Semua Log</button>
 
-      <!-- Statistik Operasi -->
-      <div class="section-title">Statistik Operasi</div>
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Backwash Hari Ini</div>
-          <div class="stat-val">3 <span style="font-size:12px;font-weight:500;color:var(--text-3)">kali</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Air Diproses</div>
-          <div class="stat-val">1,250 <span style="font-size:12px;font-weight:500;color:var(--text-3)">L</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Rata-rata Turbidity</div>
-          <div class="stat-val">0.38 <span style="font-size:12px;font-weight:500;color:var(--text-3)">NTU</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Uptime Sistem</div>
-          <div class="stat-val">99.6 <span style="font-size:12px;font-weight:500;color:var(--text-3)">%</span></div>
-        </div>
-      </div>
-
-      <!-- Pengaturan -->
-      <div class="section-title">Ambang Batas Sensor</div>
+      <!-- Simulated WhatsApp configurations -->
+      <div class="section-title">Koneksi Notifikasi WhatsApp (Fonnte)</div>
       <div class="setting-list">
         <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">Turbidity (NTU)</div>
-          </div>
-          <input class="setting-input" type="number" value="1.00" id="cfg-turb"/>
+          <span>Target Nomor HP</span>
+          <input class="setting-input wide" type="tel" value="6281234567890" id="cfg-wa"/>
         </div>
         <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">TDS (ppm)</div>
-          </div>
-          <input class="setting-input" type="number" value="200" id="cfg-tds"/>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">Aliran (L/min)</div>
-          </div>
-          <input class="setting-input" type="number" value="10" id="cfg-flow"/>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">Membran (%)</div>
-          </div>
-          <input class="setting-input" type="number" value="70" id="cfg-life"/>
+          <span>Fonnte API Token</span>
+          <input class="setting-input wide" type="password" value="MOCK_FONNTE_TOKEN_SECRET" id="cfg-token"/>
         </div>
       </div>
-
-      <div class="section-title">Koneksi WhatsApp (Fonnte)</div>
-      <div class="setting-list">
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">API Key</div>
-          </div>
-          <input class="setting-input wide" type="password" placeholder="••••••••••••••" id="cfg-token"/>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-name">Base URL</div>
-          </div>
-          <input class="setting-input wide" type="text" value="https://api.fonnte.com" id="cfg-url"/>
-        </div>
-      </div>
-
-      <div class="section-title">Nomor HP Tujuan</div>
-      <div class="setting-list">
-        <div class="setting-row">
-          <input class="setting-input wide" type="tel" placeholder="6281234567890" id="cfg-wa" style="width:100%;max-width:100%"/>
-        </div>
-      </div>
-
-      <button class="btn-primary" style="margin-top:8px" onclick="saveSettings()">Simpan Pengaturan</button>
-
+      <button class="btn-primary" style="margin-top:12px" onclick="saveMockSettings()">Simpan Token &amp; Jalankan Pesan Uji</button>
     </main>
 
-  </div><!-- end app-main -->
-</div><!-- end app -->
+  </div>
+</div>
 
-<!-- ═══ BOTTOM NAV (mobile) ═══ -->
+<!-- ═══ BOTTOM NAV ═══ -->
 <nav class="bottom-nav">
-  <a class="nav-item active" data-page="dashboard" href="#" aria-label="Dashboard">
+  <a class="nav-item active" data-page="dashboard" href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+      <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
     </svg>
     <span>Dashboard</span>
   </a>
-  <a class="nav-item" data-page="peringatan" href="#" aria-label="Peringatan">
+  <a class="nav-item" data-page="peringatan" href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
       <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
     </svg>
     <span>Peringatan</span>
   </a>
-  <a class="nav-item" href="ml.html" aria-label="AI Analytics">
+  <a class="nav-item" data-page="ml-page" href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
       <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
     </svg>
     <span>AI Analytics</span>
   </a>
-  <a class="nav-item" data-page="filter" href="#" aria-label="Filter">
+  <a class="nav-item" data-page="filter" href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
       <path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/>
     </svg>
     <span>Filter</span>
   </a>
-  <a class="nav-item" data-page="lainnya" href="#" aria-label="Lainnya">
+  <a class="nav-item" data-page="lainnya" href="#">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
       <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
     </svg>
@@ -623,66 +596,19 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-<script src="js/data.js" defer></script>
-<script src="js/charts.js" defer></script>
-<script src="js/simulation.js" defer></script>
-<script src="js/app.js" defer></script>
-<script src="js/zerowaste.js" defer></script>
-<script src="js/patch.js" defer></script>
-<script>
-// ── NAV ──────────────────────────────────────────────
-function navigateTo(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const pg = document.getElementById('page-' + pageId);
-  if (pg) pg.classList.add('active');
-  document.querySelectorAll('.nav-item[data-page]').forEach(n => {
-    n.classList.toggle('active', n.dataset.page === pageId);
-  });
-}
-
-document.querySelectorAll('.nav-item[data-page]').forEach(item => {
-  item.addEventListener('click', e => { e.preventDefault(); navigateTo(item.dataset.page); });
-});
-
-// ── SIM BUTTON ────────────────────────────────────────
-const simBtn = document.getElementById('btn-sim');
-if (simBtn) simBtn.addEventListener('click', () => {
-  if (typeof toggleSim === 'function') toggleSim();
-});
-
-// ── TOAST ─────────────────────────────────────────────
-let _tt;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  if (!el) return;
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-// ── SETTINGS ──────────────────────────────────────────
-function saveSettings() {
-  showToast('✅ Pengaturan berhasil disimpan');
-}
-
-function testWhatsApp() {
-  const num   = document.getElementById('cfg-wa')?.value?.trim();
-  const token = document.getElementById('cfg-token')?.value?.trim();
-  if (!num)   { showToast('⚠ Isi nomor HP dulu'); return; }
-  if (!token) { showToast('⚠ Isi API Key dulu'); return; }
-  showToast('📤 Mengirim pesan ke ' + num + '...');
-}
-
-function clearLog() {
-  const el = document.getElementById('log-list');
-  if (el) el.innerHTML = '';
-}
-
-// ── SYNC CLOCK ────────────────────────────────────────
-setInterval(() => {
-  const el = document.getElementById('last-sync');
-  if (el) el.textContent = new Date().toLocaleTimeString('id-ID');
-}, 1000);
-</script>
+<!-- ==========================================================================
+   JAVASCRIPT — Urutan load PENTING (dependency antar file)
+   ========================================================================== -->
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ml.js"></script>
+<script src="js/ml_data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/ml_ui.js"></script>
+<script src="js/ml_app.js"></script>
+<script src="js/simulation.js"></script>
+<script src="js/patch.js"></script>
+<script src="js/zerowaste.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
